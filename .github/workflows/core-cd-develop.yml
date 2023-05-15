@@ -1,5 +1,7 @@
 name: core-cd-develop
 
+# Just run on develop branch
+
 on:
   push:
     branches: [ develop ]
