@@ -1,5 +1,7 @@
 name: core-cd-develop
 
+# Just run on develop branch
+
 on:
   push:
     branches: [ develop ]
@@ -17,4 +19,4 @@ jobs:
         heroku_api_key: ${{secrets.HEROKU_API_KEY_HML}}
         heroku_app_name: ${{secrets.HEROKU_APP_NAME_HML}}
         heroku_email: ${{secrets.HEROKU_EMAIL_HML}}
-        remote_branch: develop
+        branch: develop

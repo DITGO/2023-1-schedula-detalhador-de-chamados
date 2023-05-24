@@ -17,4 +17,4 @@ jobs:
         heroku_api_key: ${{secrets.HEROKU_API_KEY_PRD}}
         heroku_app_name: ${{secrets.HEROKU_APP_NAME_PRD}}
         heroku_email: ${{secrets.HEROKU_EMAIL_PRD}}
-        remote_branch: main
+        branch: main
