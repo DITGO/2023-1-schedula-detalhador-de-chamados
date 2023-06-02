@@ -82,19 +82,15 @@ describe('ProblemCategoryController', () => {
     });
   });
 
-  // describe('findProblemCategory', () => {
-  //   it('should return a problem category entity succesfully', async () => {
-  //     const id = mockUuid;
-  //     const message = 'Categoria de problema encontrada';
-  //     const result = await controller.findProblemCategory(id);
-  //     expect(result).toMatchObject({
-  //       problemCategory: mockProblemCategoryEntityList[0],
-  //       message: message,
-  //     });
-  //     expect(service.findProblemCategoryById).toHaveBeenCalledTimes(1);
-  //     expect(service.findProblemCategoryById).toHaveBeenCalledWith(id);
-  //   });
-  // });
+  describe('findProblemCategory', () => {
+    it('should return a problem category entity succesfully', async () => {
+      const id = mockUuid;
+      const result = await controller.findProblemCategory(id);
+      expect(result).toMatchObject({ ...mockProblemCategoryEntityList[0] });
+      expect(service.findProblemCategoryById).toHaveBeenCalledTimes(1);
+      expect(service.findProblemCategoryById).toHaveBeenCalledWith(id);
+    });
+  });
 
   describe('updateProblemCategory', () => {
     it('should update a problem category entity with new data successfully', async () => {
