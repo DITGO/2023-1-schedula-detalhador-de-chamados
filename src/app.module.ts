@@ -1,5 +1,6 @@
 import { ProblemCategoryModule } from './problem-category/problem-category.module';
 import { IssueModule } from './issue/issue.module';
+import { IssueOpenModule } from './issue-open/issueOpen.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { Module, CacheModule } from '@nestjs/common';
@@ -36,6 +37,7 @@ const configService = configuration();
     ProblemCategoryModule,
     ProblemTypesModule,
     IssueModule,
+    IssueOpenModule,
     ScheduleModule,
   ],
   controllers: [AppController],
