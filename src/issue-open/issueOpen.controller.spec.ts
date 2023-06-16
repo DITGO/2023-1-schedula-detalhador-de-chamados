@@ -19,8 +19,8 @@ describe('IssuesOpenController', () => {
     problem_types_ids: ['Type Mock'],
     date: new Date(),
     email: 'mockerson@mock.com',
-    description:"description Mock",
-    cellphone: "6194002-8922",
+    description: 'description Mock',
+    cellphone: '6194002-8922',
   };
 
   const mockUpdateissueOpenDto: CreateIssueOpendto = {
@@ -32,8 +32,8 @@ describe('IssuesOpenController', () => {
     problem_types_ids: ['Type Mock'],
     date: new Date(),
     email: 'mockerson@mock.com',
-    description:"description Mock",
-    cellphone: "6194002-8922",
+    description: 'description Mock',
+    cellphone: '6194002-8922',
   };
 
   const mockIssuesOpenService = {

@@ -39,7 +39,9 @@ export class IssuesOpenService {
     return problem_types;
   }
 
-  async createIssueOpen(createIssueOpendto: CreateIssueOpendto): Promise<IssueOpen> {
+  async createIssueOpen(
+    createIssueOpendto: CreateIssueOpendto,
+  ): Promise<IssueOpen> {
     const problem_category: ProblemCategory =
       await this.problem_category_service.findProblemCategoryById(
         createIssueOpendto.problem_category_id,
@@ -112,7 +114,9 @@ export class IssuesOpenService {
   async deleteIssueOpen(issueOpenId: string) {
     const result = await this.IssueOpenRepo.delete({ id: issueOpenId });
     if (result.affected === 0) {
-      throw new NotFoundException('Não foi encontrado um Agendamento com este id');
+      throw new NotFoundException(
+        'Não foi encontrado um Agendamento com este id',
+      );
     }
   }
 }

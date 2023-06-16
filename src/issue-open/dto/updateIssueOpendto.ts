@@ -7,6 +7,6 @@ export class UpdateIssueOpendto {
   problem_types_ids: string[];
   date: Date;
   email: string;
-  description:string;
+  description: string;
   cellphone: string;
 }
