@@ -68,7 +68,7 @@ describe('IssuesOpenService', () => {
     date: date,
     email: 'mockerson@mock.com',
     description: 'Description Mock',
-    cellphone: '40028922',
+    cellphone: '40028922123',
   };
 
   const usersEntityList = [{ ...mockCreateIssueOpendto }];
