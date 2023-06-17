@@ -3,7 +3,7 @@ import { IssuesOpenController } from './issueOpen.controller';
 import { IssuesOpenService } from './issueOpen.service';
 import { v4 as uuidv4 } from 'uuid';
 import { CacheModule } from '@nestjs/common';
-import { CreateIssueOpendto } from './dto/CreateIssueOpendto';
+import { CreateIssueOpendto } from './dto/createIssueOpendto';
 
 describe('IssuesOpenController', () => {
   let controller: IssuesOpenController;
