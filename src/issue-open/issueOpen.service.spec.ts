@@ -137,7 +137,7 @@ describe('IssuesOpenService', () => {
     const dto = mockCreateIssueOpendto;
     it('should call issueOpen repository with correct params', async () => {
       await issuesOpenService.createIssueOpen(dto);
-      expect(issuesOpenRepository.create);
+      expect(issuesOpenRepository.create).toHaveBeenCalled();
     });
 
     it('should call issueOpen repository save function with correct params', async () => {
