@@ -30,9 +30,9 @@ export class IssuesOpenService {
     problem_types_ids: string[],
   ): Promise<ProblemType[]> {
     const problem_types: ProblemType[] = [];
-    for (const i in problem_types_ids) {
+    for (const problemTypeId of problem_types_ids) {
       const problem_type = await this.problem_types_service.findProblemType(
-        problem_types_ids[i],
+        problemTypeId,
       );
       problem_types.push(problem_type);
     }
