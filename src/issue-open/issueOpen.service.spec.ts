@@ -41,8 +41,8 @@ describe('IssuesOpenService', () => {
     problem_types: [mockProblemType],
     email: 'mockerson@mock.com',
     date: date,
-    description:"Description Mock",
-    cellphone:"4002-8922",
+    description: 'Description Mock',
+    cellphone: '40028922123',
   };
 
   const mockCreateIssueOpendto: CreateIssueOpendto = {
@@ -54,8 +54,8 @@ describe('IssuesOpenService', () => {
     problem_types_ids: ['type'],
     date: date,
     email: 'mockerson@mock.com',
-    description:"Description Mock",
-    cellphone:"4002-8922",
+    description: 'Description Mock',
+    cellphone: '40028922123',
   };
 
   const mockUpdateIssueOpenDto: UpdateIssueOpendto = {
@@ -67,8 +67,8 @@ describe('IssuesOpenService', () => {
     problem_types_ids: ['type'],
     date: date,
     email: 'mockerson@mock.com',
-    description:"Description Mock",
-    cellphone:"4002-8922",
+    description: 'Description Mock',
+    cellphone: '40028922123',
   };
 
   const usersEntityList = [{ ...mockCreateIssueOpendto }];
@@ -123,7 +123,9 @@ describe('IssuesOpenService', () => {
     }).compile();
 
     issuesOpenService = module.get<IssuesOpenService>(IssuesOpenService);
-    issuesOpenRepository = module.get<Repository<IssueOpen>>(getRepositoryToken(IssueOpen));
+    issuesOpenRepository = module.get<Repository<IssueOpen>>(
+      getRepositoryToken(IssueOpen),
+    );
   });
 
   it('should be defined', () => {
@@ -135,14 +137,14 @@ describe('IssuesOpenService', () => {
     const dto = mockCreateIssueOpendto;
     it('should call issueOpen repository with correct params', async () => {
       await issuesOpenService.createIssueOpen(dto);
-      expect(issuesOpenRepository.create);
+      expect(issuesOpenRepository.create).toHaveBeenCalled();
     });
 
     it('should call issueOpen repository save function with correct params', async () => {
       jest.spyOn(issuesOpenRepository, 'create').mockReturnValueOnce({
         ...mockIssueOpen,
         id: '1',
-      } as IssueOpen);
+      } as unknown as IssueOpen);
       await issuesOpenService.createIssueOpen(mockCreateIssueOpendto);
       expect(issuesOpenRepository.save).toHaveBeenCalledWith({
         ...mockIssueOpen,
@@ -151,7 +153,9 @@ describe('IssuesOpenService', () => {
     });
 
     it('should throw an internal server error exception', async () => {
-      jest.spyOn(issuesOpenRepository, 'save').mockRejectedValueOnce(new Error());
+      jest
+        .spyOn(issuesOpenRepository, 'save')
+        .mockRejectedValueOnce(new Error());
       expect(issuesOpenService.createIssueOpen(dto)).rejects.toThrowError(
         InternalServerErrorException,
       );
@@ -205,9 +209,9 @@ describe('IssuesOpenService', () => {
     it('should return an internal server error exception when issueOpen cannot be updated', async () => {
       jest.spyOn(issuesOpenRepository, 'save').mockRejectedValue(new Error());
 
-      expect(issuesOpenService.updateIssueOpen({ ...dto }, id)).rejects.toThrowError(
-        InternalServerErrorException,
-      );
+      expect(
+        issuesOpenService.updateIssueOpen({ ...dto }, id),
+      ).rejects.toThrowError(InternalServerErrorException);
     });
   });
 

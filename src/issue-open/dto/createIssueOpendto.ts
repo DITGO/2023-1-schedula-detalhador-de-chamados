@@ -1,53 +1,46 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, ValidateIf } from 'class-validator';
+
+function validateNotEmpty(message: string): PropertyDecorator {
+  return function (
+    target: Record<string, unknown>,
+    propertyKey: string | symbol,
+  ): void {
+    IsNotEmpty({ message })(target, propertyKey);
+    ValidateIf((object, value) => value !== null && value !== '')(
+      target,
+      propertyKey,
+    );
+  };
+}
 
 export class CreateIssueOpendto {
-  @IsNotEmpty({
-    message: 'Solicitante não fornecido',
-  })
+  @validateNotEmpty('Solicitante não foi fornecido')
   requester: string;
 
-  @IsNotEmpty({
-    message: 'Telefone não fornecido',
-  })
+  @validateNotEmpty('Telefone não foi fornecido')
   phone: string;
 
-  @IsNotEmpty({
-    message: 'Cidade não fornecido',
-  })
+  @validateNotEmpty('Cidade não foi fornecido')
   city_id: string;
 
-  @IsNotEmpty({
-    message: 'Posto de Trabalho não fornecido',
-  })
+  @validateNotEmpty('Posto de Trabalho não foi fornecido')
   workstation_id: string;
 
-  @IsNotEmpty({
-    message: 'categoria do Problema não fornecido',
-  })
+  @validateNotEmpty('categoria do Problema não foi fornecido')
   problem_category_id: string;
 
-  @IsNotEmpty({
-    message: 'Tipo do Problema não fornecido',
-  })
+  @validateNotEmpty('Tipo do Problema não foi fornecido')
   problem_types_ids: string[];
 
-  @IsNotEmpty({
-    message: 'Data não fornecido',
-  })
+  @validateNotEmpty('Data não foi fornecido')
   date: Date;
 
-  @IsNotEmpty({
-    message: 'email não fornecido',
-  })
+  @validateNotEmpty('email não foi fornecido')
   email: string;
 
-  @IsNotEmpty({
-    message: 'Celular não fornecido',
-  })
+  @validateNotEmpty('Celular não foi fornecido')
   cellphone: string;
 
-  @IsNotEmpty({
-    message: 'Descrição não fornecida',
-  })
+  @validateNotEmpty('Descrição não foi fornecida')
   description: string;
 }

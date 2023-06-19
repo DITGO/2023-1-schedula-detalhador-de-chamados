@@ -19,8 +19,12 @@ export class IssuesOpenController {
   constructor(private issuesOpenService: IssuesOpenService) {}
 
   @Post()
-  async createIssueOpen(@Body() createIssueOpendto: CreateIssueOpendto): Promise<IssueOpen> {
-    const issueOpen = await this.issuesOpenService.createIssueOpen(createIssueOpendto);
+  async createIssueOpen(
+    @Body() createIssueOpendto: CreateIssueOpendto,
+  ): Promise<IssueOpen> {
+    const issueOpen = await this.issuesOpenService.createIssueOpen(
+      createIssueOpendto,
+    );
     return issueOpen;
   }
 
@@ -41,7 +45,10 @@ export class IssuesOpenController {
     @Param('id') id: string,
     @Body() updateIssueOpendto: CreateIssueOpendto,
   ): Promise<IssueOpen> {
-    const issueOpen = await this.issuesOpenService.updateIssueOpen(updateIssueOpendto, id);
+    const issueOpen = await this.issuesOpenService.updateIssueOpen(
+      updateIssueOpendto,
+      id,
+    );
     return issueOpen;
   }
 

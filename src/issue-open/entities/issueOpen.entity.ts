@@ -36,9 +36,9 @@ export class IssueOpen extends BaseEntity {
 
   @Column()
   date: Date;
-  
+
   @Column()
-  description:string;
+  description: string;
 
   @Column()
   cellphone: string;

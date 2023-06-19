@@ -30,16 +30,18 @@ export class IssuesOpenService {
     problem_types_ids: string[],
   ): Promise<ProblemType[]> {
     const problem_types: ProblemType[] = [];
-    for (const i in problem_types_ids) {
+    for (const problemTypeId of problem_types_ids) {
       const problem_type = await this.problem_types_service.findProblemType(
-        problem_types_ids[i],
+        problemTypeId,
       );
       problem_types.push(problem_type);
     }
     return problem_types;
   }
 
-  async createIssueOpen(createIssueOpendto: CreateIssueOpendto): Promise<IssueOpen> {
+  async createIssueOpen(
+    createIssueOpendto: CreateIssueOpendto,
+  ): Promise<IssueOpen> {
     const problem_category: ProblemCategory =
       await this.problem_category_service.findProblemCategoryById(
         createIssueOpendto.problem_category_id,
@@ -112,7 +114,9 @@ export class IssuesOpenService {
   async deleteIssueOpen(issueOpenId: string) {
     const result = await this.IssueOpenRepo.delete({ id: issueOpenId });
     if (result.affected === 0) {
-      throw new NotFoundException('Não foi encontrado um Agendamento com este id');
+      throw new NotFoundException(
+        'Não foi encontrado um Agendamento com este id',
+      );
     }
   }
 }

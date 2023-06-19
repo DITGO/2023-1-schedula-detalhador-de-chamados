@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IssuesOpenController } from './issueOpen.controller';
 import { IssuesOpenService } from './issueOpen.service';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateIssueOpendto } from './dto/CreateIssueOpendto';
 import { CacheModule } from '@nestjs/common';
+import { CreateIssueOpendto } from './dto/createIssueOpendto';
 
 describe('IssuesOpenController', () => {
   let controller: IssuesOpenController;
@@ -19,8 +19,8 @@ describe('IssuesOpenController', () => {
     problem_types_ids: ['Type Mock'],
     date: new Date(),
     email: 'mockerson@mock.com',
-    description:"description Mock",
-    cellphone: "6194002-8922",
+    description: 'description Mock',
+    cellphone: '61940028922',
   };
 
   const mockUpdateissueOpenDto: CreateIssueOpendto = {
@@ -32,8 +32,8 @@ describe('IssuesOpenController', () => {
     problem_types_ids: ['Type Mock'],
     date: new Date(),
     email: 'mockerson@mock.com',
-    description:"description Mock",
-    cellphone: "6194002-8922",
+    description: 'description Mock',
+    cellphone: '61940028922',
   };
 
   const mockIssuesOpenService = {
