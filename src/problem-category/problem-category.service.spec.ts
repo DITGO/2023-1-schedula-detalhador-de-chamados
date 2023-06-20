@@ -4,11 +4,9 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ProblemCategory } from './entities/problem-category.entity';
 import { ProblemTypesService } from '../problem-types/problem-types.service';
-import {
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
+
 
 describe('ProblemCategoryService', () => {
     let service: ProblemCategoryService;
@@ -83,67 +81,82 @@ describe('ProblemCategoryService', () => {
         repo = module.get<Repository<ProblemCategory>>(getRepositoryToken(ProblemCategory));
     });
 
-    it('should throw an internal server error exception', async () => {
-      jest.spyOn(repo, 'save').mockRejectedValueOnce(new Error());
-      expect(
-        service.createProblemCategory(mockCreateProblemCategoryDto),
-      ).rejects.toThrowError(
-        new InternalServerErrorException(
-          'Erro ao salvar a categoria no banco de dados',
-        ),
-      );
-    });
-  });
-
-  describe('findProblemCategories', () => {
-    it('should return all problem categories', async () => {
-      const problem_categories = await service.findProblemCategories();
-      expect(problem_categories).toEqual(mockProblemCategoryEntityList);
-    });
-  });
-
-  describe('findProblemCategoryById', () => {
-    it('should return a problem category by id', async () => {
-      const problem_category = await service.findProblemCategoryById(mockUuid);
-      expect(problem_category).toEqual(mockProblemCategoryEntityList);
+    it('should be defined', () => {
+        expect(service).toBeDefined();
     });
 
-    it('should throw an internal server error exception', async () => {
-      jest.spyOn(repo, 'findOne').mockResolvedValue(null);
-      expect(service.findProblemCategoryById(mockUuid)).rejects.toThrowError(
-        NotFoundException,
-      );
-    });
-  });
-
-  describe('updateProblemCategory', () => {
-    it('should update a problem category successfully', async () => {
-      const response = await service.updateProblemCategory(
-        mockUuid,
-        mockUpdateProblemCategoryDto,
-      );
-      expect(response).toEqual(mockProblemCategory);
+    describe('updateProblemTypes', () => {
+        it('should update problem types', async () => {
+            const problem_types = await service.updateProblemTypes(mockIssuesIdsList);
+            expect(problem_types).toEqual([mockProblemType]);
+        });
     });
 
-    it('should throw an internal server error exception', async () => {
-      jest.spyOn(repo, 'save').mockRejectedValueOnce(new Error());
-      expect(
-        service.updateProblemCategory(mockUuid, mockUpdateProblemCategoryDto),
-      ).rejects.toThrowError(new InternalServerErrorException());
-    });
-  });
+    describe('createProblemCategory', () => {
+        it('should create a problem category', async () => {
+            const dto = mockCreateProblemCategoryDto;
+            const problem_category = await service.createProblemCategory(dto);
+            expect(problem_category).toEqual(mockProblemCategory);
+        });
 
-  describe('deleteProblemCategory', () => {
-    it('should delete a problem category successfully', async () => {
-      await service.deleteProblemCategory(mockUuid);
-      expect(repo.softRemove).toHaveBeenCalledTimes(1);
+        it('should throw an internal server error exception', async () => {
+            jest.spyOn(repo, 'save').mockRejectedValueOnce(new Error());
+            expect(
+                service.createProblemCategory(mockCreateProblemCategoryDto),
+            ).rejects.toThrowError(new InternalServerErrorException('Erro ao salvar a categoria no banco de dados'));
+        });
     });
 
-    it('should throw an internal server error exception', async () => {
-      jest.spyOn(repo, 'findOne').mockResolvedValue(null);
-      expect(service.deleteProblemCategory(mockUuid)).rejects.toThrowError(
-        NotFoundException,
-      );
+    describe('findProblemCategories', () => {
+        it('should return all problem categories', async () => {
+            const problem_categories = await service.findProblemCategories();
+            expect(problem_categories).toEqual(mockProblemCategoryEntityList);
+        });
     });
-  });
+
+    
+    describe('findProblemCategoryById', () => {
+        it('should return a problem category by id', async () => {
+            const problem_category = await service.findProblemCategoryById(mockUuid);
+            expect(problem_category).toEqual(mockProblemCategoryEntityList);
+        });
+
+        it('should throw an internal server error exception', async () => {
+            jest.spyOn(repo, 'findOne').mockResolvedValue(null);
+            expect(service.findProblemCategoryById(mockUuid)).rejects.toThrowError(
+                NotFoundException,
+            );
+        });
+    });
+
+    describe('updateProblemCategory', () => {
+        it('should update a problem category successfully', async () => {
+            const response = await service.updateProblemCategory(
+                mockUuid,
+                mockUpdateProblemCategoryDto,
+              );
+            expect(response).toEqual(mockProblemCategory);
+        });
+
+        it('should throw an internal server error exception', async () => {
+            jest.spyOn(repo, 'save').mockRejectedValueOnce(new Error());
+            expect(
+                service.updateProblemCategory(mockUuid, mockUpdateProblemCategoryDto),
+            ).rejects.toThrowError(new InternalServerErrorException());
+        });
+    });
+
+    describe('deleteProblemCategory', () => {
+        it('should delete a problem category successfully', async () => {
+            await service.deleteProblemCategory(mockUuid);
+            expect(repo.softRemove).toHaveBeenCalledTimes(1);
+        });
+
+        it('should throw an internal server error exception', async () => {
+            jest.spyOn(repo, 'findOne').mockResolvedValue(null);
+            expect(service.deleteProblemCategory(mockUuid)).rejects.toThrowError(
+            NotFoundException,
+        );
+        });
+    });
 });
