@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { ProblemCategory } from '../../problem-category/entities/problem-category.entity';
 import { ProblemType } from '../../problem-types/entities/problem-type.entity';
-import { ScheduleOpen } from '../../schedules-open/entities/scheduleOpen.entity';
+import { Schedule } from '../../schedules/entities/schedule.entity';
 
 @Entity()
 export class IssueOpen extends BaseEntity {
@@ -57,6 +57,6 @@ export class IssueOpen extends BaseEntity {
   @JoinTable()
   problem_types: Relation<ProblemType[]>;
 
-  @OneToOne(() => ScheduleOpen, (schedule: ScheduleOpen) => schedule.issue)
-  schedule: Relation<ScheduleOpen>;
+  @OneToOne(() => Schedule, (schedule: Schedule) => schedule.issue)
+  schedule: Relation<Schedule>;
 }
