@@ -16,11 +16,13 @@ describe('ProblemCategoryService', () => {
     
     const mockProblemType = {
         name: 'mockProblemType',
+        visible_user_external: false,
         description: 'mockDescription',
     };
     
     const mockProblemCategory = {
         name: 'mockProblemCategory',
+        visible_user_external: false,
         desciption: 'mockDescription',
         problem_types: [mockProblemType],
     };
@@ -29,12 +31,14 @@ describe('ProblemCategoryService', () => {
 
     const mockCreateProblemCategoryDto = {
         name: 'mockProblemCategory',
+        visible_user_external: false,
         description: 'mockDescription',
         problem_types_ids: ['123'],
     };
 
     const mockUpdateProblemCategoryDto = {
         name: 'mockProblemCategory',
+        visible_user_external: false,
         description: 'mockDescription',
         problem_types_ids: ['123'],
     };
