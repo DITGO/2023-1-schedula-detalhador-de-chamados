@@ -10,12 +10,12 @@ import { SchedulesOpenService } from './schedulesOpen.service';
 import { ScheduleOpen } from './entities/scheduleOpen.entity';
 import { CreateScheduleOpenDto } from './dto/createScheduleOpendto';
 import { UpdateScheduleOpenDto } from './dto/updateScheduleOpendto';
-import { IssuesService } from '../issue/issue.service';
 import { CreateIssueOpendto } from '../issue-open/dto/createIssueOpendto';
+import { IssuesOpenService } from '../issue-open/issueOpen.service';
 
 describe('SchedulesService', () => {
-  let schedulesService: SchedulesOpenService;
-  let schedulesRepository: Repository<ScheduleOpen>;
+  let schedulesOpenService: SchedulesOpenService;
+  let schedulesOpenRepository: Repository<ScheduleOpen>;
 
   const mockUuid = uuid();
 
@@ -42,6 +42,8 @@ describe('SchedulesService', () => {
   ];
 
   const mockCreateIssueOpendto: CreateIssueOpendto = {
+    cellphone: '61988554474',
+    description: 'Mock description',
     requester: 'Mockerson',
     phone: '61988554474',
     city_id: 'Brasilia',
@@ -84,7 +86,7 @@ describe('SchedulesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SchedulesOpenService,
-        IssuesService,
+        IssuesOpenService,
         {
           provide: getRepositoryToken(ScheduleOpen),
           useValue: {
@@ -105,35 +107,35 @@ describe('SchedulesService', () => {
         },
       ],
     })
-      .overrideProvider(IssuesService)
-      .useValue(mockIssuesService)
+      .overrideProvider(IssuesOpenService)
+      .useValue(mockIssuesOpenService)
       .compile();
 
-    schedulesService = module.get<SchedulesService>(SchedulesService);
-    schedulesRepository = module.get<Repository<Schedule>>(
-      getRepositoryToken(Schedule),
+    schedulesOpenService = module.get<SchedulesOpenService>(SchedulesOpenService);
+    schedulesOpenRepository = module.get<Repository<ScheduleOpen>>(
+      getRepositoryToken(ScheduleOpen),
     );
   });
 
   it('should be defined', () => {
-    expect(schedulesService).toBeDefined();
-    expect(schedulesRepository).toBeDefined();
+    expect(schedulesOpenService).toBeDefined();
+    expect(schedulesOpenRepository).toBeDefined();
   });
 
   describe('createSchedule', () => {
     const dto = mockCreateScheduleDto;
 
     it('should create a schedule with success', async () => {
-      const response = await schedulesService.createSchedule(dto);
+      const response = await schedulesOpenService.createScheduleOpen(dto);
       expect(response).toHaveProperty('id');
     });
 
     it('should throw an internal server error when schedule cannot be saved', async () => {
       jest
-        .spyOn(schedulesRepository, 'save')
+        .spyOn(schedulesOpenRepository, 'save')
         .mockRejectedValueOnce(new Error());
 
-      expect(schedulesService.createSchedule({ ...dto })).rejects.toThrowError(
+      expect(schedulesOpenService.createScheduleOpen({ ...dto })).rejects.toThrowError(
         InternalServerErrorException,
       );
     });
@@ -143,16 +145,16 @@ describe('SchedulesService', () => {
     const dto = mockUpdateScheduleDto;
     const id = uuid();
     it('should update a schedule with success', async () => {
-      const response = await schedulesService.updateSchedule(dto, id);
+      const response = await schedulesOpenService.updateScheduleOpen(dto, id);
       expect(response).toMatchObject({ ...mockUpdateScheduleDto });
     });
 
     it('should throw an internal server error when schedule cannot be updated', () => {
       jest
-        .spyOn(schedulesRepository, 'save')
+        .spyOn(schedulesOpenRepository, 'save')
         .mockRejectedValueOnce(new Error());
 
-      expect(schedulesService.updateSchedule(dto, id)).rejects.toThrowError(
+      expect(schedulesOpenService.updateScheduleOpen(dto, id)).rejects.toThrowError(
         InternalServerErrorException,
       );
     });
@@ -160,16 +162,16 @@ describe('SchedulesService', () => {
 
   describe('findSchedules', () => {
     it('should return a schedule entity list successfully', async () => {
-      const response = await schedulesService.findSchedules();
+      const response = await schedulesOpenService.findSchedulesOpen();
 
       expect(response).toEqual(schedulesEntityList);
-      expect(schedulesRepository.find).toHaveBeenCalledTimes(1);
+      expect(schedulesOpenRepository.find).toHaveBeenCalledTimes(1);
     });
 
     it('should throw a not found exception', async () => {
-      jest.spyOn(schedulesRepository, 'find').mockResolvedValueOnce(null);
+      jest.spyOn(schedulesOpenRepository, 'find').mockResolvedValueOnce(null);
 
-      expect(schedulesService.findSchedules()).rejects.toThrowError(
+      expect(schedulesOpenService.findSchedulesOpen()).rejects.toThrowError(
         NotFoundException,
       );
     });
@@ -179,15 +181,15 @@ describe('SchedulesService', () => {
     const id = mockUuid;
 
     it('should return a schedule entity successfully', async () => {
-      const response = await schedulesService.findScheduleById(id);
+      const response = await schedulesOpenService.findScheduleOpenById(id);
 
       expect(response).toEqual(schedulesEntityList[0]);
     });
 
     it('should throw a not found exception', () => {
-      jest.spyOn(schedulesRepository, 'findOne').mockResolvedValueOnce(null);
+      jest.spyOn(schedulesOpenRepository, 'findOne').mockResolvedValueOnce(null);
 
-      expect(schedulesService.findScheduleById(id)).rejects.toThrowError(
+      expect(schedulesOpenService.findScheduleOpenById(id)).rejects.toThrowError(
         NotFoundException,
       );
     });
@@ -198,9 +200,9 @@ describe('SchedulesService', () => {
       const id = mockUuid;
 
       jest
-        .spyOn(schedulesRepository, 'delete')
+        .spyOn(schedulesOpenRepository, 'delete')
         .mockResolvedValue({ affected: 0 } as DeleteResult);
-      expect(schedulesService.deleteSchedule(id)).rejects.toThrowError(
+      expect(schedulesOpenService.deleteScheduleOpen(id)).rejects.toThrowError(
         NotFoundException,
       );
     });

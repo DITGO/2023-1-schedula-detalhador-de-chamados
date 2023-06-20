@@ -11,7 +11,7 @@ describe('SchedulesController', () => {
 
   const mockUuid = uuidv4();
 
-  const mockCreateScheduleDto: CreateScheduleOpenDto = {
+  const mockCreateScheduleOpenDto: CreateScheduleOpenDto = {
     issue_id: '123',
     alerts: [
       new Date('2022-12-17T17:55:20.565'),
@@ -22,7 +22,7 @@ describe('SchedulesController', () => {
     dateTime: new Date('2022-12-17T17:55:20.565'),
   };
 
-  const mockUpdateScheduleDto: UpdateScheduleOpenDto = {
+  const mockUpdateScheduleOpenDto: UpdateScheduleOpenDto = {
     issue_id: '123',
     description: 'Outra descrição valida',
     status_e: 'CLOSED',
@@ -30,28 +30,28 @@ describe('SchedulesController', () => {
     dateTime: new Date('2022-12-17T17:55:20.565'),
   };
 
-  const mockSchedulesService = {
-    createSchedule: jest.fn((dto) => {
+  const mockSchedulesOpenService = {
+    createScheduleOpen: jest.fn((dto) => {
       return {
         ...dto,
       };
     }),
-    findSchedules: jest.fn(() => {
-      return [{ ...mockCreateScheduleDto }];
+    findSchedulesOpen: jest.fn(() => {
+      return [{ ...mockCreateScheduleOpenDto }];
     }),
-    findScheduleById: jest.fn((id) => {
+    findScheduleOpenById: jest.fn((id) => {
       return {
         id,
-        ...mockCreateScheduleDto,
+        ...mockCreateScheduleOpenDto,
       };
     }),
-    updateSchedule: jest.fn((dto, id) => {
+    updateScheduleOpen: jest.fn((dto, id) => {
       return {
         ...dto,
         id,
       };
     }),
-    deleteSchedule: jest.fn(() => {
+    deleteScheduleOpen: jest.fn(() => {
       return {
         message: 'Agendamento removido com sucesso',
       };
@@ -66,7 +66,7 @@ describe('SchedulesController', () => {
     })
 
       .overrideProvider(SchedulesOpenService)
-      .useValue(mockSchedulesService)
+      .useValue(mockSchedulesOpenService)
       .compile();
 
     controller = module.get<SchedulesOpenController>(SchedulesOpenController);
@@ -77,15 +77,15 @@ describe('SchedulesController', () => {
   });
 
   it('should create a schedule', async () => {
-    const dto = mockCreateScheduleDto;
+    const dto = mockCreateScheduleOpenDto;
     const response = await controller.createScheduleOpen(dto);
     expect(response).toMatchObject({ ...dto });
   });
 
   it('should return all schedules', async () => {
-    const response = await controller.getScheduleOpen();
+    const response = await controller.getSchedulesOpen();
     expect(response.length).toBeGreaterThan(0);
-    expect(response).toEqual([{ ...mockCreateScheduleDto }]);
+    expect(response).toEqual([{ ...mockCreateScheduleOpenDto }]);
   });
 
   it('should return a schedule with the respective id', async () => {
@@ -96,7 +96,7 @@ describe('SchedulesController', () => {
 
   it('should update a schedule', async () => {
     const scheduleId = mockUuid;
-    const dto = mockUpdateScheduleDto;
+    const dto = mockUpdateScheduleOpenDto;
     const response = await controller.updateScheduleOpen(scheduleId, dto);
     expect(response).toMatchObject({ id: scheduleId, ...dto });
   });
