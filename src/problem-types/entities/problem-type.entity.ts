@@ -19,6 +19,9 @@ export class ProblemType extends BaseEntity {
   @Column()
   name: string;
 
+  @Column()
+  visible_user_external: boolean;
+
   @ManyToOne(
     () => ProblemCategory,
     (problem_category: ProblemCategory) => problem_category.problem_types,
