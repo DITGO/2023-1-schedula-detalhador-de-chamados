@@ -1,0 +1,7 @@
+export enum ScheduleOpenStatus {
+  NOT_RESOLVED = 'NÃO RESOLVIDO',
+  PROGRESS = 'EM ANDAMENTO',
+  PENDENT = 'PENDENTE',
+  URGENT = 'URGENTE',
+  RESOLVED = 'RESOLVIDO',
+}
