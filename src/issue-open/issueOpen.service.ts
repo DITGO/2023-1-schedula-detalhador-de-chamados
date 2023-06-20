@@ -60,7 +60,7 @@ export class IssuesOpenService {
       throw new InternalServerErrorException(error.message);
     }
   }
-
+  
   async findIssuesOpen(): Promise<IssueOpen[]> {
     const issuesOpen = await this.IssueOpenRepo.find({
       relations: ['problem_category', 'problem_types'],

@@ -17,10 +17,10 @@ import { IssueOpen } from '../issue-open/entities/issueOpen.entity';
 export class SchedulesOpenService {
   constructor(
     @InjectRepository(ScheduleOpen)
-    private scheduleRepo: Repository<ScheduleOpen>,
+    private scheduleOpenRepo: Repository<ScheduleOpen>,
     @InjectRepository(ScheduleOpen)
     private alertRepo: Repository<AlertOpen>,
-    private issuesService: IssuesOpenService,
+    private issuesOpenService: IssuesOpenService,
   ) {}
 
   createAlerts(dates: Date[]): AlertOpen[] {
@@ -38,16 +38,16 @@ export class SchedulesOpenService {
   async createScheduleOpen(dto: CreateScheduleOpenDto): Promise<ScheduleOpen> {
     console.log('Issue ID:', dto.issue_id);
     const alerts: AlertOpen[] = dto.alerts ? this.createAlerts(dto.alerts) : [];
-    const issue: IssueOpen = await this.issuesService.findIssueOpenById(dto.issue_id);
+    const issue: IssueOpen = await this.issuesOpenService.findIssueOpenById(dto.issue_id);
     const status: ScheduleOpenStatus = ScheduleOpenStatus[dto.status_e];
-    const schedule = this.scheduleRepo.create({
+    const schedule = this.scheduleOpenRepo.create({
       ...dto,
       alerts,
       issue,
       status,
     });
     try {
-      await this.scheduleRepo.save(schedule);
+      await this.scheduleOpenRepo.save(schedule);
       return schedule;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -55,7 +55,7 @@ export class SchedulesOpenService {
   }
 
   async findSchedulesOpen(): Promise<ScheduleOpen[]> {
-    const schedules = await this.scheduleRepo.find({
+    const schedules = await this.scheduleOpenRepo.find({
       relations: ['alerts', 'issue'],
     });
     if (!schedules)
@@ -64,7 +64,7 @@ export class SchedulesOpenService {
   }
 
   async findScheduleOpenById(scheduleId: string): Promise<ScheduleOpen> {
-    const schedule = await this.scheduleRepo.findOne({
+    const schedule = await this.scheduleOpenRepo.findOne({
       where: { id: scheduleId },
       relations: ['alerts', 'issue'],
     });
@@ -76,7 +76,7 @@ export class SchedulesOpenService {
     dto: UpdateScheduleOpenDto,
     scheduleId: string,
   ): Promise<ScheduleOpen> {
-    const schedule = await this.scheduleRepo.findOneBy({
+    const schedule = await this.scheduleOpenRepo.findOneBy({
       id: scheduleId,
     });
     try {
@@ -84,11 +84,11 @@ export class SchedulesOpenService {
         ? this.createAlerts(dto.alerts)
         : schedule.alerts;
       const issue: IssueOpen = dto.issue_id
-        ? await this.issuesService.findIssueOpenById(dto.issue_id)
+        ? await this.issuesOpenService.findIssueOpenById(dto.issue_id)
         : schedule.issue;
       const status: ScheduleOpenStatus = ScheduleOpenStatus[dto.status_e];
-      await this.scheduleRepo.save({ id: scheduleId, alerts, issue, status });
-      return await this.scheduleRepo.findOneBy({
+      await this.scheduleOpenRepo.save({ id: scheduleId, alerts, issue, status });
+      return await this.scheduleOpenRepo.findOneBy({
         id: scheduleId,
       });
     } catch (error) {
@@ -97,7 +97,7 @@ export class SchedulesOpenService {
   }
 
   async deleteScheduleOpen(scheduleId: string) {
-    const result = await this.scheduleRepo.delete({ id: scheduleId });
+    const result = await this.scheduleOpenRepo.delete({ id: scheduleId });
     if (result.affected === 0) {
       throw new NotFoundException(
         'Nao foi encontrado um agendamento com este id',
