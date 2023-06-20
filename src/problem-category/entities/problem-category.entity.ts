@@ -22,6 +22,9 @@ export class ProblemCategory extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
+  @Column()
+  visible_user_external: boolean;
+
   @OneToMany(
     () => ProblemType,
     (problem_type: ProblemType) => problem_type.problem_category,

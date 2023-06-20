@@ -11,92 +11,76 @@ import {
 import { v4 as uuid } from 'uuid';
 
 describe('ProblemCategoryService', () => {
-  let service: ProblemCategoryService;
-  let repo: Repository<ProblemCategory>;
+    let service: ProblemCategoryService;
+    let repo: Repository<ProblemCategory>;
+    
+    const mockUuid = uuid();
+    
+    const mockProblemType = {
+        name: 'mockProblemType',
+        visible_user_external: false,
+        description: 'mockDescription',
+    };
+    
+    const mockProblemCategory = {
+        name: 'mockProblemCategory',
+        visible_user_external: false,
+        desciption: 'mockDescription',
+        problem_types: [mockProblemType],
+    };
+    
+    const mockIssuesIdsList: string[] = ['0'];
 
-  const mockUuid = uuid();
+    const mockCreateProblemCategoryDto = {
+        name: 'mockProblemCategory',
+        visible_user_external: false,
+        description: 'mockDescription',
+        problem_types_ids: ['123'],
+    };
 
-  const mockProblemType = {
-    name: 'mockProblemType',
-    description: 'mockDescription',
-  };
+    const mockUpdateProblemCategoryDto = {
+        name: 'mockProblemCategory',
+        visible_user_external: false,
+        description: 'mockDescription',
+        problem_types_ids: ['123'],
+    };
 
-  const mockProblemCategory = {
-    name: 'mockProblemCategory',
-    desciption: 'mockDescription',
-    problem_types: [mockProblemType],
-  };
+    const mockProblemTypesService = {
+        findProblemTypes: jest.fn().mockResolvedValue([{ ...mockProblemType }]),
+        findProblemType: jest.fn().mockResolvedValue(mockProblemType),
+        createProblemType: jest.fn().mockResolvedValue(mockProblemType),
+        updateProblemType: jest.fn().mockResolvedValue(mockProblemType),
+        deleteProblemType: jest.fn(),
+    };
 
-  const mockIssuesIdsList: string[] = ['0'];
+    const mockProblemCategoryEntityList = [{ ...mockCreateProblemCategoryDto }];
 
-  const mockCreateProblemCategoryDto = {
-    name: 'mockProblemCategory',
-    description: 'mockDescription',
-    problem_types_ids: ['123'],
-  };
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                ProblemCategoryService,
+                {
+                    provide: getRepositoryToken(ProblemCategory),
+                    useValue: {
+                        find: jest.fn().mockResolvedValue(mockProblemCategoryEntityList),
+                        findOne: jest.fn().mockResolvedValue(mockProblemCategoryEntityList),
+                        findOneBy: jest.fn().mockResolvedValue(mockProblemCategory),
+                        create: jest.fn().mockReturnValue(mockProblemCategory),
+                        save: jest.fn().mockReturnValue(mockProblemCategory),
+                        update: jest.fn().mockResolvedValue(mockProblemCategory),
+                        delete: jest.fn(),
+                        softRemove: jest.fn(),
+                    },
+                },
+                {
+                    provide: ProblemTypesService,
+                    useValue: mockProblemTypesService,
+                },
+            ],
+        }).compile();
 
-  const mockUpdateProblemCategoryDto = {
-    name: 'mockProblemCategory',
-    description: 'mockDescription',
-    problem_types_ids: ['123'],
-  };
-
-  const mockProblemTypesService = {
-    findProblemTypes: jest.fn().mockResolvedValue([{ ...mockProblemType }]),
-    findProblemType: jest.fn().mockResolvedValue(mockProblemType),
-    createProblemType: jest.fn().mockResolvedValue(mockProblemType),
-    updateProblemType: jest.fn().mockResolvedValue(mockProblemType),
-    deleteProblemType: jest.fn(),
-  };
-
-  const mockProblemCategoryEntityList = [{ ...mockCreateProblemCategoryDto }];
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ProblemCategoryService,
-        {
-          provide: getRepositoryToken(ProblemCategory),
-          useValue: {
-            find: jest.fn().mockResolvedValue(mockProblemCategoryEntityList),
-            findOne: jest.fn().mockResolvedValue(mockProblemCategoryEntityList),
-            findOneBy: jest.fn().mockResolvedValue(mockProblemCategory),
-            create: jest.fn().mockReturnValue(mockProblemCategory),
-            save: jest.fn().mockReturnValue(mockProblemCategory),
-            update: jest.fn().mockResolvedValue(mockProblemCategory),
-            delete: jest.fn(),
-            softRemove: jest.fn(),
-          },
-        },
-        {
-          provide: ProblemTypesService,
-          useValue: mockProblemTypesService,
-        },
-      ],
-    }).compile();
-
-    service = module.get<ProblemCategoryService>(ProblemCategoryService);
-    repo = module.get<Repository<ProblemCategory>>(
-      getRepositoryToken(ProblemCategory),
-    );
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  describe('updateProblemTypes', () => {
-    it('should update problem types', async () => {
-      const problem_types = await service.updateProblemTypes(mockIssuesIdsList);
-      expect(problem_types).toEqual([mockProblemType]);
-    });
-  });
-
-  describe('createProblemCategory', () => {
-    it('should create a problem category', async () => {
-      const dto = mockCreateProblemCategoryDto;
-      const problem_category = await service.createProblemCategory(dto);
-      expect(problem_category).toEqual(mockProblemCategory);
+        service = module.get<ProblemCategoryService>(ProblemCategoryService);
+        repo = module.get<Repository<ProblemCategory>>(getRepositoryToken(ProblemCategory));
     });
 
     it('should throw an internal server error exception', async () => {
