@@ -6,5 +6,6 @@ export class UpdateProblemCategoryDto extends PartialType(
 ) {
   name: string;
   description: string;
+  visible_user_external: boolean;
   problem_types_ids: string[];
 }
