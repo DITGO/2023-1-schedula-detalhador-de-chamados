@@ -14,6 +14,8 @@ import { ProblemType } from '../problem-types/entities/problem-type.entity';
 import { ProblemTypesService } from '../problem-types/problem-types.service';
 import { ProblemCategory } from '../problem-category/entities/problem-category.entity';
 import { ProblemCategoryService } from '../problem-category/problem-category.service';
+import { SendMailIssueOpendto } from './dto/sendMailIssueOpendto';
+import { createTransport } from 'nodemailer';
 
 @Injectable()
 export class IssuesOpenService {
@@ -119,4 +121,36 @@ export class IssuesOpenService {
       );
     }
   }
+
+  async sendMailIssueOpen(sendMailIssueOpendto: SendMailIssueOpendto) {
+    console.log('sendMailIssueOpendto', sendMailIssueOpendto);
+
+    const transporter = createTransport({
+      service: process.env.SERVICE_SMTP,
+      auth: {
+        user: process.env.USER_SMTP,
+        pass: process.env.PASS_SMTP,
+      },
+    });
+    console.log(process.env.USER_SMTP, "user")
+    console.log(process.env.PASS_SMTP, "senha")
+    console.log("chegou");
+
+    const mailOptions = {
+      from: process.env.USER_SMTP, // sender address
+      to: [sendMailIssueOpendto.targetMail], // receiver (use array of string for a list)
+      subject: 'Status do agendamento aberto - Schedula', // Subject line
+      html: `<p>${sendMailIssueOpendto.justify}</p>`, // plain text body
+    };
+
+    transporter.sendMail(mailOptions, (err: Error | null, info: any) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(info);
+      }
+    });
+  
+  }
+
 }

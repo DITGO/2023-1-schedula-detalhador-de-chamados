@@ -43,6 +43,9 @@ export class IssueOpen extends BaseEntity {
   @Column()
   cellphone: string;
 
+  @Column()
+  dateTime: Date;
+
   @ManyToOne(
     () => ProblemCategory,
     (problem_category: ProblemCategory) => problem_category.issues,
