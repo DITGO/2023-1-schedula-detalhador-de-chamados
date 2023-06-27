@@ -46,4 +46,6 @@ export class CreateIssueOpendto {
 
   dateTime: Date;
 
+  alerts: Date[];
+
 }

@@ -16,17 +16,33 @@ import { ProblemCategory } from '../problem-category/entities/problem-category.e
 import { ProblemCategoryService } from '../problem-category/problem-category.service';
 import { SendMailIssueOpendto } from './dto/sendMailIssueOpendto';
 import { createTransport } from 'nodemailer';
+import { AlertIssueOpen } from './entities/alertIssueOpen.entity';
 
 @Injectable()
 export class IssuesOpenService {
   constructor(
     @InjectRepository(IssueOpen)
     private IssueOpenRepo: Repository<IssueOpen>,
+    @InjectRepository(AlertIssueOpen)
+    private alertIssueOpenRepo: Repository<AlertIssueOpen>,
     @Inject(forwardRef(() => ProblemTypesService))
     private problem_types_service: ProblemTypesService,
     @Inject(forwardRef(() => ProblemCategoryService))
     private problem_category_service: ProblemCategoryService,
   ) {}
+
+  createAlerts(dates: Date[]): AlertIssueOpen[] {
+    const alerts: AlertIssueOpen[] = [];
+
+    dates.forEach((date) => {
+      const alert = this.alertIssueOpenRepo.create();
+      alert.date = date;
+      alerts.push(alert);
+    });
+
+    return alerts;
+  }
+
 
   async updateProblemTypes(
     problem_types_ids: string[],
@@ -44,6 +60,7 @@ export class IssuesOpenService {
   async createIssueOpen(
     createIssueOpendto: CreateIssueOpendto,
   ): Promise<IssueOpen> {
+    const alerts: AlertIssueOpen[] = createIssueOpendto.alerts ? this.createAlerts(createIssueOpendto.alerts) : [];
     const problem_category: ProblemCategory =
       await this.problem_category_service.findProblemCategoryById(
         createIssueOpendto.problem_category_id,
@@ -53,6 +70,7 @@ export class IssuesOpenService {
     );
     const issueOpen = this.IssueOpenRepo.create({
       ...createIssueOpendto,
+      alerts,
       problem_category,
       problem_types,
     });
@@ -65,7 +83,7 @@ export class IssuesOpenService {
   
   async findIssuesOpen(): Promise<IssueOpen[]> {
     const issuesOpen = await this.IssueOpenRepo.find({
-      relations: ['problem_category', 'problem_types'],
+      relations: ['alerts', 'problem_category', 'problem_types'],
     });
     if (!issuesOpen)
       throw new NotFoundException('Não existem Agendamentos cadastrados');
@@ -75,7 +93,7 @@ export class IssuesOpenService {
   async findIssueOpenById(issueOpenId: string): Promise<IssueOpen> {
     const IssueOpen = await this.IssueOpenRepo.findOne({
       where: { id: issueOpenId },
-      relations: ['problem_category', 'problem_types'],
+      relations: ['alerts', 'problem_category', 'problem_types'],
     });
     if (!IssueOpen) throw new NotFoundException('Agendamento não encontrado');
     return IssueOpen;
@@ -88,8 +106,11 @@ export class IssuesOpenService {
     const issueOpen = await this.IssueOpenRepo.findOneBy({
       id: issueOpenId,
     });
-
+    
     try {
+      const alerts: AlertIssueOpen[] = updateIssueOpendto.alerts
+        ? this.createAlerts(updateIssueOpendto.alerts)
+        : issueOpen.alerts;
       const problem_category: ProblemCategory =
         updateIssueOpendto.problem_category_id
           ? await this.problem_category_service.findProblemCategoryById(
@@ -102,6 +123,7 @@ export class IssuesOpenService {
       await this.IssueOpenRepo.save({
         id: issueOpenId,
         ...updateIssueOpendto,
+        alerts,
         problem_category,
         problem_types,
       });

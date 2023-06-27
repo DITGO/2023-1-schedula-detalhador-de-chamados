@@ -10,4 +10,5 @@ export class UpdateIssueOpendto {
   description: string;
   cellphone: string;
   dateTime: Date;
+  alerts: Date[];
 }
