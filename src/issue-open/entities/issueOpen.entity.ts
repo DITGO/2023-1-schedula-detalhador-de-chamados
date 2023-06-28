@@ -1,4 +1,5 @@
 import {
+  OneToMany,
   BaseEntity,
   Entity,
   PrimaryGeneratedColumn,
@@ -12,7 +13,8 @@ import {
 } from 'typeorm';
 import { ProblemCategory } from '../../problem-category/entities/problem-category.entity';
 import { ProblemType } from '../../problem-types/entities/problem-type.entity';
-import { Schedule } from '../../schedules/entities/schedule.entity';
+import { ScheduleOpen } from '../../schedules-open/entities/scheduleOpen.entity';
+import { AlertIssueOpen } from './alertIssueOpen.entity';
 
 @Entity()
 export class IssueOpen extends BaseEntity {
@@ -43,6 +45,9 @@ export class IssueOpen extends BaseEntity {
   @Column()
   cellphone: string;
 
+  @Column({nullable: true})
+  dateTime: Date;
+
   @ManyToOne(
     () => ProblemCategory,
     (problem_category: ProblemCategory) => problem_category.issues,
@@ -57,6 +62,12 @@ export class IssueOpen extends BaseEntity {
   @JoinTable()
   problem_types: Relation<ProblemType[]>;
 
-  @OneToOne(() => Schedule, (schedule: Schedule) => schedule.issue)
-  schedule: Relation<Schedule>;
+  @OneToOne(() => ScheduleOpen, (schedule: ScheduleOpen) => schedule.issue)
+  schedule: Relation<ScheduleOpen>;
+
+  @OneToMany(() => AlertIssueOpen, (alertIssueOpen: AlertIssueOpen) => alertIssueOpen.issueOpen, {
+    cascade: true,
+  })
+  @JoinColumn()
+  alerts: Relation<AlertIssueOpen[]>; 
 }

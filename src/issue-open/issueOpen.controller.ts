@@ -12,6 +12,8 @@ import {
 import { IssueOpen } from './entities/issueOpen.entity';
 import { IssuesOpenService } from './issueOpen.service';
 import { CreateIssueOpendto } from './dto/createIssueOpendto';
+import { SendMailIssueOpendto } from './dto/sendMailIssueOpendto';
+import { AlertIssueOpen } from './entities/alertIssueOpen.entity';
 
 @Controller('issuesOpen')
 @UseInterceptors(CacheInterceptor)
@@ -59,4 +61,14 @@ export class IssuesOpenController {
       message: 'Agendamento removido com sucesso',
     };
   }
+
+  @Post('email')
+  async sendMailIssueOpen(
+    @Body() sendMailIssueOpendto: SendMailIssueOpendto,
+  ): Promise<void> {
+    const issueOpen = await this.issuesOpenService.sendMailIssueOpen(
+      sendMailIssueOpendto,
+    );
+  }
+
 }

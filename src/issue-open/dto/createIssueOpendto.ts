@@ -43,4 +43,9 @@ export class CreateIssueOpendto {
 
   @validateNotEmpty('Descrição não foi fornecida')
   description: string;
+
+  dateTime: Date;
+
+  alerts: Date[];
+
 }
