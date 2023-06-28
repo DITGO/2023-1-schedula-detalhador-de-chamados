@@ -148,6 +148,7 @@ export class IssuesOpenService {
     console.log('sendMailIssueOpendto', sendMailIssueOpendto);
 
     const transporter = createTransport({
+      secure: true,
       service: process.env.SERVICE_SMTP,
       auth: {
         user: process.env.USER_SMTP,
