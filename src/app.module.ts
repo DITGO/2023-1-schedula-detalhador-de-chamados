@@ -10,6 +10,7 @@ import { ScheduleModule } from './schedules/schedules.module';
 import { ScheduleOpenModule } from './schedules-open/schedulesOpen.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProblemTypesModule } from './problem-types/problem-types.module';
+import { AlertIssueOpen } from './issue-open/entities/alertIssueOpen.entity';
 
 const configService = configuration();
 

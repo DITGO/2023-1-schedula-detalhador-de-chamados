@@ -21,6 +21,8 @@ describe('IssuesOpenController', () => {
     email: 'mockerson@mock.com',
     description: 'description Mock',
     cellphone: '61940028922',
+    dateTime: undefined,
+    alerts: []
   };
 
   const mockUpdateissueOpenDto: CreateIssueOpendto = {
@@ -34,6 +36,8 @@ describe('IssuesOpenController', () => {
     email: 'mockerson@mock.com',
     description: 'description Mock',
     cellphone: '61940028922',
+    dateTime: undefined,
+    alerts: []
   };
 
   const mockIssuesOpenService = {

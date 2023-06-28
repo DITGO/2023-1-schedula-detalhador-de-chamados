@@ -20,7 +20,7 @@ export class SchedulesOpenService {
     private scheduleRepo: Repository<ScheduleOpen>,
     @InjectRepository(ScheduleOpen)
     private alertRepo: Repository<AlertOpen>,
-    private issuesService: IssuesOpenService,
+    private issuesOpenService: IssuesOpenService,
   ) {}
 
   createAlerts(dates: Date[]): AlertOpen[] {
@@ -38,7 +38,7 @@ export class SchedulesOpenService {
   async createScheduleOpen(dto: CreateScheduleOpenDto): Promise<ScheduleOpen> {
     console.log('Issue ID:', dto.issue_id);
     const alerts: AlertOpen[] = dto.alerts ? this.createAlerts(dto.alerts) : [];
-    const issue: IssueOpen = await this.issuesService.findIssueOpenById(dto.issue_id);
+    const issue: IssueOpen = await this.issuesOpenService.findIssueOpenById(dto.issue_id);
     const status: ScheduleOpenStatus = ScheduleOpenStatus[dto.status_e];
     const schedule = this.scheduleRepo.create({
       ...dto,
@@ -84,7 +84,7 @@ export class SchedulesOpenService {
         ? this.createAlerts(dto.alerts)
         : schedule.alerts;
       const issue: IssueOpen = dto.issue_id
-        ? await this.issuesService.findIssueOpenById(dto.issue_id)
+        ? await this.issuesOpenService.findIssueOpenById(dto.issue_id)
         : schedule.issue;
       const status: ScheduleOpenStatus = ScheduleOpenStatus[dto.status_e];
       await this.scheduleRepo.save({ id: scheduleId, alerts, issue, status });

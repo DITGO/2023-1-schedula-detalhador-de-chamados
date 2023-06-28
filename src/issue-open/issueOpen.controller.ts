@@ -13,6 +13,7 @@ import { IssueOpen } from './entities/issueOpen.entity';
 import { IssuesOpenService } from './issueOpen.service';
 import { CreateIssueOpendto } from './dto/createIssueOpendto';
 import { SendMailIssueOpendto } from './dto/sendMailIssueOpendto';
+import { AlertIssueOpen } from './entities/alertIssueOpen.entity';
 
 @Controller('issuesOpen')
 @UseInterceptors(CacheInterceptor)

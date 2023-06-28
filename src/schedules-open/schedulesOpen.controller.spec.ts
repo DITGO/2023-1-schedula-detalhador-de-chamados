@@ -31,27 +31,27 @@ describe('SchedulesController', () => {
   };
 
   const mockSchedulesService = {
-    createSchedule: jest.fn((dto) => {
+    createScheduleOpen: jest.fn((dto) => {
       return {
         ...dto,
       };
     }),
-    findSchedules: jest.fn(() => {
+    findSchedulesOpen: jest.fn(() => {
       return [{ ...mockCreateScheduleDto }];
     }),
-    findScheduleById: jest.fn((id) => {
+    findScheduleOpenById: jest.fn((id) => {
       return {
         id,
         ...mockCreateScheduleDto,
       };
     }),
-    updateSchedule: jest.fn((dto, id) => {
+    updateScheduleOpen: jest.fn((dto, id) => {
       return {
         ...dto,
         id,
       };
     }),
-    deleteSchedule: jest.fn(() => {
+    deleteScheduleOpen: jest.fn(() => {
       return {
         message: 'Agendamento removido com sucesso',
       };
@@ -83,7 +83,7 @@ describe('SchedulesController', () => {
   });
 
   it('should return all schedules', async () => {
-    const response = await controller.getScheduleOpen();
+    const response = await controller.getSchedulesOpen();
     expect(response.length).toBeGreaterThan(0);
     expect(response).toEqual([{ ...mockCreateScheduleDto }]);
   });
