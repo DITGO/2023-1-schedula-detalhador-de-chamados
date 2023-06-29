@@ -145,7 +145,6 @@ export class IssuesOpenService {
   }
 
   async sendMailIssueOpen(sendMailIssueOpendto: SendMailIssueOpendto) {
-    console.log('sendMailIssueOpendto', sendMailIssueOpendto);
 
     const transporter = createTransport({
       secure: true,
@@ -155,10 +154,7 @@ export class IssuesOpenService {
         pass: process.env.PASS_SMTP,
       },
     });
-    console.log(process.env.USER_SMTP, "user")
-    console.log(process.env.PASS_SMTP, "senha")
-    console.log("chegou");
-
+    
     const mailOptions = {
       from: process.env.USER_SMTP, // sender address
       to: [sendMailIssueOpendto.targetMail], // receiver (use array of string for a list)
