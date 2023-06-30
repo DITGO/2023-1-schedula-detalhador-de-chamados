@@ -53,7 +53,8 @@ describe('SchedulesOpenService', () => {
     cellphone: '',
     description: '',
     dateTime: undefined,
-    alerts: []
+    alerts: [],
+    isHomolog: false,
   };
 
   const mockIssuesOpenService = {
@@ -113,7 +114,8 @@ describe('SchedulesOpenService', () => {
       .useValue(mockIssuesOpenService)
       .compile();
 
-    schedulesOpenService = module.get<SchedulesOpenService>(SchedulesOpenService);
+    schedulesOpenService =
+      module.get<SchedulesOpenService>(SchedulesOpenService);
     schedulesRepository = module.get<Repository<ScheduleOpen>>(
       getRepositoryToken(ScheduleOpen),
     );
@@ -137,9 +139,9 @@ describe('SchedulesOpenService', () => {
         .spyOn(schedulesRepository, 'save')
         .mockRejectedValueOnce(new Error());
 
-      expect(schedulesOpenService.createScheduleOpen({ ...dto })).rejects.toThrowError(
-        InternalServerErrorException,
-      );
+      expect(
+        schedulesOpenService.createScheduleOpen({ ...dto }),
+      ).rejects.toThrowError(InternalServerErrorException);
     });
   });
 
@@ -156,9 +158,9 @@ describe('SchedulesOpenService', () => {
         .spyOn(schedulesRepository, 'save')
         .mockRejectedValueOnce(new Error());
 
-      expect(schedulesOpenService.updateScheduleOpen(dto, id)).rejects.toThrowError(
-        InternalServerErrorException,
-      );
+      expect(
+        schedulesOpenService.updateScheduleOpen(dto, id),
+      ).rejects.toThrowError(InternalServerErrorException);
     });
   });
 
@@ -191,9 +193,9 @@ describe('SchedulesOpenService', () => {
     it('should throw a not found exception', () => {
       jest.spyOn(schedulesRepository, 'findOne').mockResolvedValueOnce(null);
 
-      expect(schedulesOpenService.findScheduleOpenById(id)).rejects.toThrowError(
-        NotFoundException,
-      );
+      expect(
+        schedulesOpenService.findScheduleOpenById(id),
+      ).rejects.toThrowError(NotFoundException);
     });
   });
 

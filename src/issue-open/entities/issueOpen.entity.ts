@@ -45,10 +45,10 @@ export class IssueOpen extends BaseEntity {
   @Column()
   cellphone: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   dateTime: Date;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   isHomolog: boolean;
 
   @ManyToOne(
@@ -68,9 +68,13 @@ export class IssueOpen extends BaseEntity {
   @OneToOne(() => ScheduleOpen, (schedule: ScheduleOpen) => schedule.issue)
   schedule: Relation<ScheduleOpen>;
 
-  @OneToMany(() => AlertIssueOpen, (alertIssueOpen: AlertIssueOpen) => alertIssueOpen.issueOpen, {
-    cascade: true,
-  })
+  @OneToMany(
+    () => AlertIssueOpen,
+    (alertIssueOpen: AlertIssueOpen) => alertIssueOpen.issueOpen,
+    {
+      cascade: true,
+    },
+  )
   @JoinColumn()
-  alerts: Relation<AlertIssueOpen[]>; 
+  alerts: Relation<AlertIssueOpen[]>;
 }

@@ -43,7 +43,6 @@ export class IssuesOpenService {
     return alerts;
   }
 
-
   async updateProblemTypes(
     problem_types_ids: string[],
   ): Promise<ProblemType[]> {
@@ -60,14 +59,16 @@ export class IssuesOpenService {
   async createIssueOpen(
     createIssueOpendto: CreateIssueOpendto,
   ): Promise<IssueOpen> {
-    const alerts: AlertIssueOpen[] = createIssueOpendto.alerts ? this.createAlerts(createIssueOpendto.alerts) : [];
+    const alerts: AlertIssueOpen[] = createIssueOpendto.alerts
+      ? this.createAlerts(createIssueOpendto.alerts)
+      : [];
     const problem_category: ProblemCategory =
-    await this.problem_category_service.findProblemCategoryById(
-      createIssueOpendto.problem_category_id,
+      await this.problem_category_service.findProblemCategoryById(
+        createIssueOpendto.problem_category_id,
       );
-      const problem_types: ProblemType[] = await this.updateProblemTypes(
-        createIssueOpendto.problem_types_ids,
-        );
+    const problem_types: ProblemType[] = await this.updateProblemTypes(
+      createIssueOpendto.problem_types_ids,
+    );
     createIssueOpendto.isHomolog = false;
     const issueOpen = this.IssueOpenRepo.create({
       ...createIssueOpendto,
@@ -81,7 +82,7 @@ export class IssuesOpenService {
       throw new InternalServerErrorException(error.message);
     }
   }
-  
+
   async findIssuesOpen(): Promise<IssueOpen[]> {
     const issuesOpen = await this.IssueOpenRepo.find({
       relations: ['alerts', 'problem_category', 'problem_types'],
@@ -107,7 +108,7 @@ export class IssuesOpenService {
     const issueOpen = await this.IssueOpenRepo.findOneBy({
       id: issueOpenId,
     });
-    
+
     try {
       const alerts: AlertIssueOpen[] = updateIssueOpendto.alerts
         ? this.createAlerts(updateIssueOpendto.alerts)
@@ -163,7 +164,6 @@ export class IssuesOpenService {
   }
 
   async sendMailIssueOpen(sendMailIssueOpendto: SendMailIssueOpendto) {
-
     const transporter = createTransport({
       secure: true,
       service: process.env.SERVICE_SMTP,
@@ -172,7 +172,7 @@ export class IssuesOpenService {
         pass: process.env.PASS_SMTP,
       },
     });
-    
+
     const mailOptions = {
       from: process.env.USER_SMTP, // sender address
       to: [sendMailIssueOpendto.targetMail], // receiver (use array of string for a list)
@@ -187,7 +187,5 @@ export class IssuesOpenService {
         console.log(info);
       }
     });
-  
   }
-
 }

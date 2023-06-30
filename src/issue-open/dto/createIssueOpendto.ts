@@ -47,5 +47,4 @@ export class CreateIssueOpendto {
   dateTime: Date;
   isHomolog: boolean;
   alerts: Date[];
-
 }

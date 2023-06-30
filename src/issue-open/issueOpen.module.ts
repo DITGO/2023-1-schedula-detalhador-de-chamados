@@ -11,7 +11,12 @@ import { AlertIssueOpen } from './entities/alertIssueOpen.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([IssueOpen, AlertIssueOpen, ProblemCategory, ProblemType]),
+    TypeOrmModule.forFeature([
+      IssueOpen,
+      AlertIssueOpen,
+      ProblemCategory,
+      ProblemType,
+    ]),
     forwardRef(() => ProblemCategoryModule),
     forwardRef(() => ProblemTypesModule),
   ],

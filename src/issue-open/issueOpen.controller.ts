@@ -63,12 +63,8 @@ export class IssuesOpenController {
   }
 
   @Put('homolog/:id')
-  async updateHomologIssueOpen(
-    @Param('id') id: string,
-  ): Promise<IssueOpen> {
-    const issueOpen = await this.issuesOpenService.updateHomologIssueOpen(
-      id
-    );
+  async updateHomologIssueOpen(@Param('id') id: string): Promise<IssueOpen> {
+    const issueOpen = await this.issuesOpenService.updateHomologIssueOpen(id);
     return issueOpen;
   }
 
@@ -80,5 +76,4 @@ export class IssuesOpenController {
       sendMailIssueOpendto,
     );
   }
-
 }
