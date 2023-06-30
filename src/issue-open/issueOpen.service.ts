@@ -69,7 +69,6 @@ export class IssuesOpenService {
         createIssueOpendto.problem_types_ids,
         );
     createIssueOpendto.isHomolog = false;
-    console.log(createIssueOpendto)
     const issueOpen = this.IssueOpenRepo.create({
       ...createIssueOpendto,
       alerts,
