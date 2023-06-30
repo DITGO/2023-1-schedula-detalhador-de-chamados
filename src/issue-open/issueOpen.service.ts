@@ -62,12 +62,14 @@ export class IssuesOpenService {
   ): Promise<IssueOpen> {
     const alerts: AlertIssueOpen[] = createIssueOpendto.alerts ? this.createAlerts(createIssueOpendto.alerts) : [];
     const problem_category: ProblemCategory =
-      await this.problem_category_service.findProblemCategoryById(
-        createIssueOpendto.problem_category_id,
+    await this.problem_category_service.findProblemCategoryById(
+      createIssueOpendto.problem_category_id,
       );
-    const problem_types: ProblemType[] = await this.updateProblemTypes(
-      createIssueOpendto.problem_types_ids,
-    );
+      const problem_types: ProblemType[] = await this.updateProblemTypes(
+        createIssueOpendto.problem_types_ids,
+        );
+    createIssueOpendto.isHomolog = false;
+    console.log(createIssueOpendto)
     const issueOpen = this.IssueOpenRepo.create({
       ...createIssueOpendto,
       alerts,
@@ -141,6 +143,23 @@ export class IssuesOpenService {
       throw new NotFoundException(
         'Não foi encontrado um Agendamento com este id',
       );
+    }
+  }
+
+  async updateHomologIssueOpen(issueOpenId: string) {
+    const issueOpen = await this.IssueOpenRepo.findOneBy({
+      id: issueOpenId,
+    });
+    try {
+      await this.IssueOpenRepo.save({
+        id: issueOpenId,
+        isHomolog: !issueOpen.isHomolog,
+      });
+      return await this.IssueOpenRepo.findOneBy({
+        id: issueOpenId,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 

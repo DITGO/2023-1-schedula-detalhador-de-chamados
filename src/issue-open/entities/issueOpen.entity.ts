@@ -48,6 +48,9 @@ export class IssueOpen extends BaseEntity {
   @Column({nullable: true})
   dateTime: Date;
 
+  @Column({nullable: true})
+  isHomolog: boolean;
+
   @ManyToOne(
     () => ProblemCategory,
     (problem_category: ProblemCategory) => problem_category.issues,
