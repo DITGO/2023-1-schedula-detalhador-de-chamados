@@ -7,7 +7,10 @@ import { AlertOpen } from './entities/alertOpen.entity';
 import { IssueOpenModule } from '../issue-open/issueOpen.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ScheduleOpen, AlertOpen]), IssueOpenModule],
+  imports: [
+    TypeOrmModule.forFeature([ScheduleOpen, AlertOpen]),
+    IssueOpenModule,
+  ],
   controllers: [SchedulesOpenController],
   providers: [SchedulesOpenService],
 })

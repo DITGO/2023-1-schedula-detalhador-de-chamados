@@ -1,7 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class SendMailIssueOpendto {
-
   @IsNotEmpty({
     message: 'E-mail de destinatário não fornecido',
   })
@@ -13,6 +12,4 @@ export class SendMailIssueOpendto {
   })
   @IsString({ message: 'Informe uma justificativa valida' })
   justify: string;
-
-
 }

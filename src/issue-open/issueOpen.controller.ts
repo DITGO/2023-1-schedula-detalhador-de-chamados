@@ -62,6 +62,12 @@ export class IssuesOpenController {
     };
   }
 
+  @Put('homolog/:id')
+  async updateHomologIssueOpen(@Param('id') id: string): Promise<IssueOpen> {
+    const issueOpen = await this.issuesOpenService.updateHomologIssueOpen(id);
+    return issueOpen;
+  }
+
   @Post('email')
   async sendMailIssueOpen(
     @Body() sendMailIssueOpendto: SendMailIssueOpendto,
@@ -70,5 +76,4 @@ export class IssuesOpenController {
       sendMailIssueOpendto,
     );
   }
-
 }

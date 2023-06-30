@@ -22,7 +22,8 @@ describe('IssuesOpenController', () => {
     description: 'description Mock',
     cellphone: '61940028922',
     dateTime: undefined,
-    alerts: []
+    alerts: [],
+    isHomolog: false,
   };
 
   const mockUpdateissueOpenDto: CreateIssueOpendto = {
@@ -37,7 +38,8 @@ describe('IssuesOpenController', () => {
     description: 'description Mock',
     cellphone: '61940028922',
     dateTime: undefined,
-    alerts: []
+    alerts: [],
+    isHomolog: false,
   };
 
   const mockIssuesOpenService = {

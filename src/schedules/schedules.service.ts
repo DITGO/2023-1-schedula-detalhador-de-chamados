@@ -78,7 +78,7 @@ export class SchedulesService {
     const schedule = await this.scheduleRepo.findOneBy({
       id: scheduleId,
     });
-    try {      
+    try {
       const alerts: Alert[] = dto.alerts
         ? this.createAlerts(dto.alerts)
         : schedule.alerts;
@@ -89,7 +89,14 @@ export class SchedulesService {
       const description = dto.description;
       const dateTime = dto.dateTime;
 
-      await this.scheduleRepo.save({ id: scheduleId, alerts, issue, status, description, dateTime});
+      await this.scheduleRepo.save({
+        id: scheduleId,
+        alerts,
+        issue,
+        status,
+        description,
+        dateTime,
+      });
       return await this.scheduleRepo.findOneBy({
         id: scheduleId,
       });

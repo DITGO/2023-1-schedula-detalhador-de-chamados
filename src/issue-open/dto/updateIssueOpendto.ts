@@ -11,4 +11,5 @@ export class UpdateIssueOpendto {
   cellphone: string;
   dateTime: Date;
   alerts: Date[];
+  isHomolog: boolean;
 }

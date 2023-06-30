@@ -36,9 +36,10 @@ export class SchedulesOpenService {
   }
 
   async createScheduleOpen(dto: CreateScheduleOpenDto): Promise<ScheduleOpen> {
-
     const alerts: AlertOpen[] = dto.alerts ? this.createAlerts(dto.alerts) : [];
-    const issue: IssueOpen = await this.issuesOpenService.findIssueOpenById(dto.issue_id);
+    const issue: IssueOpen = await this.issuesOpenService.findIssueOpenById(
+      dto.issue_id,
+    );
     const status: ScheduleOpenStatus = ScheduleOpenStatus[dto.status_e];
     const schedule = this.scheduleRepo.create({
       ...dto,
