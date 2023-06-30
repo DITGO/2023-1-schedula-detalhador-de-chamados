@@ -40,12 +40,14 @@ describe('ProblemTypesService', () => {
 
   const mockCreateProblemTypeDto = {
     name: 'mockProblemType',
+    visible_user_external: false,
     problem_category_id: '123',
     issues_ids: ['456', '789'],
   };
 
   const mockUpdateProblemTypeDto = {
     name: 'mockProblemType',
+    visible_user_external: false,
     problem_category_id: '123',
     issues_ids: ['456', '789'],
   };

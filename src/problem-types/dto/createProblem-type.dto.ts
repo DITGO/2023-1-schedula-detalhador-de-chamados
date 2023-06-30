@@ -9,5 +9,7 @@ export class CreateProblemTypeDto {
   @IsNotEmpty()
   problem_category_id: string;
 
+  visible_user_external: boolean;
+
   issues_ids: string[];
 }

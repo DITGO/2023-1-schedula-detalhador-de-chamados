@@ -1,13 +1,16 @@
 import { ProblemCategoryModule } from './problem-category/problem-category.module';
 import { IssueModule } from './issue/issue.module';
+import { IssueOpenModule } from './issue-open/issueOpen.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { Module, CacheModule } from '@nestjs/common';
 import configuration from './configs/configuration';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from './schedules/schedules.module';
+import { ScheduleOpenModule } from './schedules-open/schedulesOpen.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProblemTypesModule } from './problem-types/problem-types.module';
+import { AlertIssueOpen } from './issue-open/entities/alertIssueOpen.entity';
 
 const configService = configuration();
 
@@ -36,7 +39,9 @@ const configService = configuration();
     ProblemCategoryModule,
     ProblemTypesModule,
     IssueModule,
+    IssueOpenModule,
     ScheduleModule,
+    ScheduleOpenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

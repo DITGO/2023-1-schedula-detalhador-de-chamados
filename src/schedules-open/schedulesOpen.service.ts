@@ -5,26 +5,26 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Schedule } from './entities/schedule.entity';
-import { Alert } from './entities/alert.entity';
-import { CreateScheduleDto } from './dto/createScheduledto';
-import { ScheduleStatus } from './schedule-status.enum';
-import { IssuesService } from '../issue/issue.service';
-import { UpdateScheduleDto } from './dto/updateScheduledto';
-import { Issue } from '../issue/entities/issue.entity';
+import { ScheduleOpen } from './entities/scheduleOpen.entity';
+import { AlertOpen } from './entities/alertOpen.entity';
+import { CreateScheduleOpenDto } from './dto/createScheduleOpendto';
+import { ScheduleOpenStatus } from './scheduleOpen-status.enum';
+import { IssuesOpenService } from '../issue-open/issueOpen.service';
+import { UpdateScheduleOpenDto } from './dto/updateScheduleOpendto';
+import { IssueOpen } from '../issue-open/entities/issueOpen.entity';
 
 @Injectable()
-export class SchedulesService {
+export class SchedulesOpenService {
   constructor(
-    @InjectRepository(Schedule)
-    private scheduleRepo: Repository<Schedule>,
-    @InjectRepository(Schedule)
-    private alertRepo: Repository<Alert>,
-    private issuesService: IssuesService,
+    @InjectRepository(ScheduleOpen)
+    private scheduleRepo: Repository<ScheduleOpen>,
+    @InjectRepository(ScheduleOpen)
+    private alertRepo: Repository<AlertOpen>,
+    private issuesOpenService: IssuesOpenService,
   ) {}
 
-  createAlerts(dates: Date[]): Alert[] {
-    const alerts: Alert[] = [];
+  createAlerts(dates: Date[]): AlertOpen[] {
+    const alerts: AlertOpen[] = [];
 
     dates.forEach((date) => {
       const alert = this.alertRepo.create();
@@ -35,10 +35,12 @@ export class SchedulesService {
     return alerts;
   }
 
-  async createSchedule(dto: CreateScheduleDto): Promise<Schedule> {
-    const alerts: Alert[] = dto.alerts ? this.createAlerts(dto.alerts) : [];
-    const issue: Issue = await this.issuesService.findIssueById(dto.issue_id);
-    const status: ScheduleStatus = ScheduleStatus[dto.status_e];
+  async createScheduleOpen(dto: CreateScheduleOpenDto): Promise<ScheduleOpen> {
+    const alerts: AlertOpen[] = dto.alerts ? this.createAlerts(dto.alerts) : [];
+    const issue: IssueOpen = await this.issuesOpenService.findIssueOpenById(
+      dto.issue_id,
+    );
+    const status: ScheduleOpenStatus = ScheduleOpenStatus[dto.status_e];
     const schedule = this.scheduleRepo.create({
       ...dto,
       alerts,
@@ -53,7 +55,7 @@ export class SchedulesService {
     }
   }
 
-  async findSchedules(): Promise<Schedule[]> {
+  async findSchedulesOpen(): Promise<ScheduleOpen[]> {
     const schedules = await this.scheduleRepo.find({
       relations: ['alerts', 'issue'],
     });
@@ -62,7 +64,7 @@ export class SchedulesService {
     return schedules;
   }
 
-  async findScheduleById(scheduleId: string): Promise<Schedule> {
+  async findScheduleOpenById(scheduleId: string): Promise<ScheduleOpen> {
     const schedule = await this.scheduleRepo.findOne({
       where: { id: scheduleId },
       relations: ['alerts', 'issue'],
@@ -71,32 +73,22 @@ export class SchedulesService {
     return schedule;
   }
 
-  async updateSchedule(
-    dto: UpdateScheduleDto,
+  async updateScheduleOpen(
+    dto: UpdateScheduleOpenDto,
     scheduleId: string,
-  ): Promise<Schedule> {
+  ): Promise<ScheduleOpen> {
     const schedule = await this.scheduleRepo.findOneBy({
       id: scheduleId,
     });
     try {
-      const alerts: Alert[] = dto.alerts
+      const alerts: AlertOpen[] = dto.alerts
         ? this.createAlerts(dto.alerts)
         : schedule.alerts;
-      const issue: Issue = dto.issue_id
-        ? await this.issuesService.findIssueById(dto.issue_id)
+      const issue: IssueOpen = dto.issue_id
+        ? await this.issuesOpenService.findIssueOpenById(dto.issue_id)
         : schedule.issue;
-      const status: ScheduleStatus = ScheduleStatus[dto.status_e];
-      const description = dto.description;
-      const dateTime = dto.dateTime;
-
-      await this.scheduleRepo.save({
-        id: scheduleId,
-        alerts,
-        issue,
-        status,
-        description,
-        dateTime,
-      });
+      const status: ScheduleOpenStatus = ScheduleOpenStatus[dto.status_e];
+      await this.scheduleRepo.save({ id: scheduleId, alerts, issue, status });
       return await this.scheduleRepo.findOneBy({
         id: scheduleId,
       });
@@ -105,7 +97,7 @@ export class SchedulesService {
     }
   }
 
-  async deleteSchedule(scheduleId: string) {
+  async deleteScheduleOpen(scheduleId: string) {
     const result = await this.scheduleRepo.delete({ id: scheduleId });
     if (result.affected === 0) {
       throw new NotFoundException(
