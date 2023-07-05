@@ -22,7 +22,7 @@ services:
       - DATABASE_PORT=5432
 
   postgres:
-    image: postgres:latest
+    image: postgres:alpine
     container_name: schedula_core_db
     ports:
       - '5105:5432'
