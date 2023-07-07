@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Between, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Issue } from '../issue/entities/issue.entity';
-import { IssueOpen } from 'src/issue-open/entities/issueOpen.entity';
+import { IssueOpen } from '../issue-open/entities/issueOpen.entity';
+import { Schedule } from '../schedules/entities/schedule.entity';
+import { ScheduleOpen } from '../schedules-open/entities/scheduleOpen.entity';
 const PDFDocument = require('pdfkit-table');
 const ChartJsImage = require('chartjs-to-image');
 import { join } from 'path';
@@ -14,43 +16,64 @@ export class ReportService {
     private readonly issueRepository: Repository<Issue>,
     @InjectRepository(IssueOpen)
     private readonly issueOpenRepository: Repository<IssueOpen>,
+    @InjectRepository(Schedule)
+    private readonly scheduleRepository: Repository<Schedule>,
+    @InjectRepository(ScheduleOpen)
+    private readonly scheduleOpenRepository: Repository<ScheduleOpen>,
   ) {}
 
   async getReport(startDate: string, endDate: string): Promise<Buffer> {
 
+    // Check if have start date and end date, if not, set default date
+    
+    if (!startDate) {
+      startDate = '0';
+    }
+
+    if (!endDate) {
+      endDate = new Date().toISOString().slice(0, 10);
+    }
+
+    // Convert string to date
+
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+
     // Count all issue in the date range
     const countIssues = await this.issueRepository
+      .count({
+        where: {
+          date: Between(start, end),
+        },
+      });
+      
+    // Count issue by problem category and problem type
+    const countIssuesGrupedByProblemCategoryAndProblemType = await this.issueRepository
       .createQueryBuilder('issue')
+      .leftJoinAndSelect('issue.problem_category', 'problem_category')
+      .leftJoinAndSelect('issue.problem_types', 'problem_types')
+      .select('problem_category.name', 'problemCategoryName')
+      .addSelect('problem_types.name', 'problemTypeName')
+      .addSelect('COUNT(*)', 'count')
       .where('issue.date BETWEEN :startDate AND :endDate', {
         startDate,
         endDate,
       })
-      .getCount();
-
-    // Count issue by problem category and problem type
-    const countIssuesByProblemCategoryAndProblemType =
-      await this.issueRepository
-        .createQueryBuilder('issue')
-        .select('problem_category.name', 'problemCategoryName')
-        .addSelect('problem_type.name', 'problemTypeName')
-        .addSelect('COUNT(*)', 'count')
-        .innerJoin('issue.problem_category', 'problem_category')
-        .innerJoin('issue.problem_types', 'problem_type')
-        .where('issue.date BETWEEN :startDate AND :endDate', {
-          startDate,
-          endDate,
-        })
-        .groupBy('problem_category.name')
-        .addGroupBy('problem_type.name')
-        .getRawMany();
+      .groupBy('problem_category.name')
+      .addGroupBy('problem_types.name')
+      .orderBy('count', 'DESC')
+      .addOrderBy('problem_category.name', 'ASC')
+      .addOrderBy('problem_types.name', 'ASC')
+      .getRawMany();
 
     const countIssuesWithSchedule = await this.issueRepository
       .createQueryBuilder('issue')
-      .innerJoin('issue.schedule', 'schedule')
+      .leftJoin('issue.schedule', 'schedule')
       .where('issue.date BETWEEN :startDate AND :endDate', {
         startDate,
         endDate,
       })
+      .andWhere('schedule.id IS NOT NULL')
       .getCount();
 
     const countIssuesWithoutSchedule = await this.issueRepository
@@ -72,15 +95,19 @@ export class ReportService {
         endDate,
       })
       .groupBy('issue.email')
+      .orderBy('count', 'DESC')
       .getRawMany();
 
     const countSchedules = await this.issueRepository
       .createQueryBuilder('issue')
-      .innerJoin('issue.schedule', 'schedule')
+      .leftJoin('issue.schedule', 'schedule')
       .where('issue.date BETWEEN :startDate AND :endDate', {
         startDate,
         endDate,
-      });
+      })
+      .getCount();
+
+    console.log(countSchedules);
 
     const countSchedulesOpen = await this.issueOpenRepository
       .createQueryBuilder('issue_open')
@@ -91,22 +118,47 @@ export class ReportService {
       })
       .getCount();
 
-    const countSchedulesByProblemCategoryAndProblemType =
-      await this.issueRepository
-        .createQueryBuilder('issue')
-        .select('problem_category.name', 'problemCategoryName')
-        .addSelect('problem_type.name', 'problemTypeName')
-        .addSelect('COUNT(*)', 'count')
-        .innerJoin('issue.problem_category', 'problem_category')
-        .innerJoin('issue.problem_types', 'problem_type')
-        .innerJoin('issue.schedule', 'schedule')
-        .where('issue.date BETWEEN :startDate AND :endDate', {
-          startDate,
-          endDate,
-        })
-        .groupBy('problem_category.name')
-        .addGroupBy('problem_type.name')
-        .getRawMany();
+    console.log(countSchedulesOpen);
+
+    // const countSchedulesOpen = await this.issueOpenRepository
+    //   .createQueryBuilder('issue_open')
+    //   .innerJoin('issue_open.schedule', 'schedule')
+    //   .where('issue_open.date BETWEEN :startDate AND :endDate', {
+    //     startDate,
+    //     endDate,
+    //   })
+    //   .getCount();
+
+    // const countSchedulesByProblemCategoryAndProblemType =
+    //   await this.issueRepository
+    //     .createQueryBuilder('issue')
+    //     .select('problem_category.name', 'problemCategoryName')
+    //     .addSelect('problem_type.name', 'problemTypeName')
+    //     .addSelect('COUNT(*)', 'count')
+    //     .innerJoin('issue.problem_category', 'problem_category')
+    //     .innerJoin('issue.problem_types', 'problem_type')
+    //     .innerJoin('issue.schedule', 'schedule')
+    //     .where('issue.date BETWEEN :startDate AND :endDate', {
+    //       startDate,
+    //       endDate,
+    //     })
+    //     .groupBy('problem_category.name')
+    //     .addGroupBy('problem_type.name')
+    //     .getRawMany();
+
+    // const countSchedulesByStatus = await this.issueRepository
+    //   .createQueryBuilder('issue')
+    //   .select('schedule.status', 'status')
+    //   .addSelect('COUNT(*)', 'count')
+    //   .innerJoin('issue.schedule', 'schedule')
+    //   .where('issue.date BETWEEN :startDate AND :endDate', {
+    //     startDate,
+    //     endDate,
+    //   })
+    //   .groupBy('schedule.status')
+    //   .getRawMany();
+
+      // Print all variables
 
     // Create example placeholder data for chart
 
@@ -298,19 +350,11 @@ export class ReportService {
           'Tipo de problema',
           'Total de atendimentos',
         ],
-        // rows: countIssuesByProblemCategoryAndProblemType.map((issue) => [
-        //   issue.problemCategoryName,
-        //   issue.problemTypeName,
-        //   issue.count,
-        // ]),
-        // Generate 10 random rows
-        rows: [
-          ['A', 'B', 'C'],
-          ['A', 'B', 'C'],
-          ['A', 'B', 'C'],
-          ['A', 'B', 'C'],
-          ['A', 'B', 'C'],
-        ],
+        rows: countIssuesGrupedByProblemCategoryAndProblemType.map((issue) => [
+          issue.problemCategoryName,
+          issue.problemTypeName,
+          issue.count,
+        ])
       };
 
       doc.table(table_problems, option);
@@ -322,7 +366,7 @@ export class ReportService {
         rows: [
           ['INTERNO', countIssuesWithoutSchedule],
           ['EXTERNO', countIssuesWithSchedule],
-        ],
+        ]
       };
 
       doc.table(table_issue_type, {
@@ -356,7 +400,8 @@ export class ReportService {
       doc.moveDown(1);
 
       doc.font('Helvetica-Bold').fontSize(12);
-      doc.text(`Total de agendamentos abertos: ${countSchedulesOpen}`);
+      // doc.text(`Total de agendamentos abertos: ${countSchedulesOpen}`);
+      doc.text(`Total de agendamentos abertos: ${1}`);
       doc.moveDown();
 
       const table_schedules = {
@@ -379,6 +424,7 @@ export class ReportService {
       doc.table(table_schedules, option);
       doc.moveDown();
 
+      doc.font('Helvetica-Bold').fontSize(12);
       doc.text('Gráfico de agendamentos por categoria e tipo de problema:');
       doc.moveDown();
       doc.image(plotImage, { fit: [500, 300], align: 'center' });
