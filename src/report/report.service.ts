@@ -5,6 +5,7 @@ import { Issue } from '../issue/entities/issue.entity';
 import { IssueOpen } from 'src/issue-open/entities/issueOpen.entity';
 const PDFDocument = require('pdfkit-table');
 const ChartJsImage = require('chartjs-to-image');
+import { join } from 'path';
 
 @Injectable()
 export class ReportService {
@@ -16,7 +17,6 @@ export class ReportService {
   ) {}
 
   async getReport(startDate: string, endDate: string): Promise<Buffer> {
-    // return `Date range: ${startDate} - ${endDate}`;
 
     // Count all issue in the date range
     const countIssues = await this.issueRepository
@@ -157,20 +157,132 @@ export class ReportService {
       const doc = new PDFDocument({
         size: 'A4',
         bufferPages: true,
+        autoFirstPage: false,
       });
 
-      //todo
-      doc.text('PDF Gerado com sucesso');
-      doc.moveDown();
+      let pageNumber = 0;
+      doc.on('pageAdded', () => {
+        pageNumber++;
+        let bottom = doc.page.margins.bottom;
 
-      doc.text('Este PDF foi gerado automaticamente pelo sistema Schedula.');
-      doc.moveDown();
+        // Set the header
 
+        doc.image(
+          join(process.cwd(), 'assets/logo.png'),
+          0.5 * (doc.page.width - 100) + 45 / 2,
+          5,
+          { fit: [40, 40], align: 'center' },
+        );
+
+        doc.font('Helvetica').fontSize(6);
+        doc.text(`ESTADO DE GOIÁS`, doc.page.width / 2 - 240, 45, {
+          align: 'center',
+        });
+
+        doc.font('Helvetica').fontSize(6);
+        doc.text(
+          `DIRETORIA GERAL DA POLÍCIA CIVIL`,
+          doc.page.width / 2 - 240,
+          51,
+          {
+            align: 'center',
+          },
+        );
+
+        doc.font('Helvetica').fontSize(6);
+        doc.text(
+          `SUPERINTENDÊNCIA DE GESTÃO INTEGRADA`,
+          doc.page.width / 2 - 240,
+          57,
+          {
+            align: 'center',
+          },
+        );
+
+        doc.font('Helvetica').fontSize(6);
+        doc.text(
+          `DIVISÃO DE SUPORTE TÉCNICO EM INFORMÁTICA`,
+          doc.page.width / 2 - 240,
+          63,
+          {
+            align: 'center',
+          },
+        );
+
+        // Av. Anhanguera, 7364 - Aeroviario, Goiânia - GO, 74435-300
+        // Fone (62) 3201-2558 / 2539 / 2525 / 2500
+        // informatica@policiacivil.go.go.br
+        doc.page.margins.bottom = 0;
+        doc.font('Helvetica').fontSize(6);
+        doc.text(
+          `Pág. ${pageNumber}`,
+          doc.page.width - 100,
+          doc.page.height - 50,
+          {
+            width: 100,
+            align: 'center',
+            lineBreak: false,
+          },
+        );
+
+        doc.font('Helvetica').fontSize(6);
+        doc.text(
+          `Av. Anhanguera, 7364 - Aeroviario, Goiânia - GO, 74435-300`,
+          0.5 * (doc.page.width - 200),
+          doc.page.height - 45,
+          {
+            width: 200,
+            align: 'center',
+            lineBreak: false,
+          },
+        );
+
+        doc.font('Helvetica').fontSize(6);
+        doc.text(
+          `Fone (62) 3201-2558 / 2539 / 2525 / 2500`,
+          0.5 * (doc.page.width - 200),
+          doc.page.height - 38,
+          {
+            width: 200,
+            align: 'center',
+            lineBreak: false,
+          },
+        );
+
+        doc.font('Helvetica').fontSize(6);
+        doc.text(
+          `informatica@policiacivil.go.go.br`,
+          0.5 * (doc.page.width - 200),
+          doc.page.height - 31,
+          {
+            width: 200,
+            align: 'center',
+            lineBreak: false,
+          },
+        );
+
+        doc.page.margins.bottom = bottom;
+      });
+
+      doc.addPage();
+      doc.text('', 50, 80);
+      doc.font('Helvetica-Bold').fontSize(20);
       doc.text(
-        `Data de geração: ${new Date().toLocaleString('pr-br', {
+        `Relatório Schedula - ${new Date().toLocaleString('pr-br', {
           timeZone: 'America/Sao_Paulo',
         })}`,
       );
+      doc.moveDown();
+      doc.font('Helvetica').fontSize(14);
+      doc.text(`Relatório filtrado entre ${startDate} e ${endDate}`);
+      doc.moveDown();
+
+      doc.font('Helvetica-Bold').fontSize(16);
+      doc.text('Atendimentos');
+      doc.moveDown(1);
+
+      doc.font('Helvetica-Bold').fontSize(12);
+      doc.text(`Total de atendimentos: ${countIssues}`);
       doc.moveDown();
 
       const option = {
@@ -179,26 +291,30 @@ export class ReportService {
         align: 'center',
       };
 
-      // Atendimentos
-
-      doc.text(`Total de atendimentos: ${countIssues}`);
-      doc.moveDown();
-
-      doc.text('Total de atendimentos por categoria e tipo de problema:');
-      doc.moveDown();
-
       const table_problems = {
         title: 'Total de atendimentos por categoria e tipo de problema',
-        headers: ['Categoria', 'Tipo de problema', 'Total de atendimentos'],
-        rows: countIssuesByProblemCategoryAndProblemType.map((issue) => [
-          issue.problemCategoryName,
-          issue.problemTypeName,
-          issue.count,
-        ]),
+        headers: [
+          'Categoria de problema',
+          'Tipo de problema',
+          'Total de atendimentos',
+        ],
+        // rows: countIssuesByProblemCategoryAndProblemType.map((issue) => [
+        //   issue.problemCategoryName,
+        //   issue.problemTypeName,
+        //   issue.count,
+        // ]),
+        // Generate 10 random rows
+        rows: [
+          ['A', 'B', 'C'],
+          ['A', 'B', 'C'],
+          ['A', 'B', 'C'],
+          ['A', 'B', 'C'],
+          ['A', 'B', 'C'],
+        ],
       };
 
       doc.table(table_problems, option);
-      doc.moveDown();
+      doc.moveDown(1);
 
       const table_issue_type = {
         title: 'Tipo de atendimento',
@@ -209,7 +325,11 @@ export class ReportService {
         ],
       };
 
-      doc.table(table_issue_type, option);
+      doc.table(table_issue_type, {
+        ...option,
+        width: 300,
+        columnsSize: [150, 150],
+      });
       doc.moveDown();
 
       const table_email = {
@@ -218,35 +338,46 @@ export class ReportService {
         rows: countGroupByEmailIssue.map((issue) => [issue.email, issue.count]),
       };
 
-      doc.table(table_email, option);
+      doc.table(table_email, {
+        ...option,
+        width: 300,
+        columnsSize: [150, 150],
+      });
       doc.moveDown();
 
       // Agendamentos
 
-      doc.text('Total de agendamentos:');
+      doc.addPage();
+      doc.text('', 50, 70);
       doc.moveDown();
+      // Go to next page
+      doc.font('Helvetica-Bold').fontSize(16);
+      doc.text('Agendamentos');
+      doc.moveDown(1);
 
+      doc.font('Helvetica-Bold').fontSize(12);
       doc.text(`Total de agendamentos abertos: ${countSchedulesOpen}`);
-      doc.moveDown();
-
-      doc.text('Total de agendamentos por categoria e tipo de problema:');
       doc.moveDown();
 
       const table_schedules = {
         title: 'Total de agendamentos por categoria e tipo de problema',
         headers: ['Categoria', 'Tipo de problema', 'Total de agendamentos'],
-        rows: countSchedulesByProblemCategoryAndProblemType.map((issue) => [
-          issue.problemCategoryName,
-          issue.problemTypeName,
-          issue.count,
-        ]),
+        // rows: countSchedulesByProblemCategoryAndProblemType.map((issue) => [
+        //   issue.problemCategoryName,
+        //   issue.problemTypeName,
+        //   issue.count,
+        // ]),
+        // Generate 10 random rows
+        rows: [
+          ['A', 'B', 'C'],
+          ['A', 'B', 'C'],
+          ['A', 'B', 'C'],
+          ['A', 'B', 'C'],
+        ],
       };
 
       doc.table(table_schedules, option);
       doc.moveDown();
-
-      // Next page
-      doc.addPage();
 
       doc.text('Gráfico de agendamentos por categoria e tipo de problema:');
       doc.moveDown();
