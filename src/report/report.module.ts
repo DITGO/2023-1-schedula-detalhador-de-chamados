@@ -4,14 +4,10 @@ import { ReportController } from './report.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Issue } from '../issue/entities/issue.entity';
 import { IssueOpen } from '../issue-open/entities/issueOpen.entity';
-import { Schedule } from '../schedules/entities/schedule.entity';
-import { ScheduleOpen } from '../schedules-open/entities/scheduleOpen.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Issue, Issue, Schedule, ScheduleOpen]),
-  ],
+  imports: [TypeOrmModule.forFeature([Issue, IssueOpen])],
   controllers: [ReportController],
-  providers: [ReportService]
+  providers: [ReportService],
 })
 export class ReportModule {}

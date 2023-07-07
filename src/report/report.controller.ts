@@ -16,7 +16,10 @@ export class ReportController {
 
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename=RELATÓRIO-${new Date().toLocaleString('pr-br', { timeZone: 'America/Sao_Paulo' })}.pdf`,
+      'Content-Disposition': `attachment; filename=RELATÓRIO-${new Date().toLocaleString(
+        'pr-br',
+        { timeZone: 'America/Sao_Paulo' },
+      )}.pdf`,
       'Content-Length': buffer.length,
     });
 
