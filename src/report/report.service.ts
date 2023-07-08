@@ -20,14 +20,6 @@ export class ReportService {
   async getReport(startDate: string, endDate: string): Promise<Buffer> {
     // Check if have start date and end date, if not, set default date
 
-    if (!startDate) {
-      startDate = '0';
-    }
-
-    if (!endDate) {
-      endDate = new Date().toISOString().slice(0, 10);
-    }
-
     // Convert string to date
     const start = new Date(startDate);
     const end = new Date(endDate);
