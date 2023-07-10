@@ -95,7 +95,7 @@ export class ReportService {
     const countSchedulesOpen = await this.issueOpenRepository
       .createQueryBuilder('issue_open')
       .leftJoin('issue_open.schedule', 'schedule')
-      .where('issue_open.date BETWEEN :startDate AND :endDate', {
+      .where('issue_open.date >= :startDate AND issue_open.date <= :endDate', {
         startDate,
         endDate,
       })
@@ -131,7 +131,7 @@ export class ReportService {
         .select('problem_category.name', 'problemCategoryName')
         .addSelect('problem_types.name', 'problemTypeName')
         .addSelect('COUNT(*)', 'count')
-        .where('issue.date >= :startDate AND issue.date <= :endDate', {
+        .where('issue_open.date >= :startDate AND issue_open.date <= :endDate', {
           startDate,
           endDate,
         })
@@ -181,7 +181,7 @@ export class ReportService {
       .leftJoin('issue_open.schedule', 'schedule')
       .select('schedule.status', 'status')
       .addSelect('COUNT(*)', 'count')
-      .where('issue_open.date BETWEEN :startDate AND :endDate', {
+      .where('issue_open.date >= :startDate AND issue_open.date <= :endDate', {
         startDate,
         endDate,
       })
