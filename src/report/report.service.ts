@@ -7,14 +7,13 @@ import { join } from 'path';
 import PDFDocument from 'pdfkit-table';
 const ChartJsImage = require('chartjs-to-image');
 
-
 @Injectable()
 export class ReportService {
   constructor(
     @InjectRepository(Issue)
     private readonly issueRepository: Repository<Issue>,
     @InjectRepository(IssueOpen)
-    private readonly issueOpenRepository: Repository<IssueOpen>
+    private readonly issueOpenRepository: Repository<IssueOpen>,
   ) {}
 
   async getReport(startDate: string, endDate: string): Promise<Buffer> {
@@ -131,10 +130,13 @@ export class ReportService {
         .select('problem_category.name', 'problemCategoryName')
         .addSelect('problem_types.name', 'problemTypeName')
         .addSelect('COUNT(*)', 'count')
-        .where('issue_open.date >= :startDate AND issue_open.date <= :endDate', {
-          startDate,
-          endDate,
-        })
+        .where(
+          'issue_open.date >= :startDate AND issue_open.date <= :endDate',
+          {
+            startDate,
+            endDate,
+          },
+        )
         .andWhere('schedule.id IS NOT NULL')
         .groupBy('problem_category.name')
         .addGroupBy('problem_types.name')
@@ -401,51 +403,79 @@ export class ReportService {
         align: 'center',
       };
 
-      const table_problems = {
-        title: 'Total de atendimentos por categoria e tipo de problema',
-        headers: [
-          'Categoria de problema',
-          'Tipo de problema',
-          'Total de atendimentos',
-        ],
-        rows: countIssuesGrupedByProblemCategoryAndProblemType.map((issue) => [
-          issue.problemCategoryName,
-          issue.problemTypeName,
-          issue.count,
-        ]),
-      };
+      if (countIssuesGrupedByProblemCategoryAndProblemType.length > 0) {
+        const table_problems = {
+          title: 'Total de atendimentos por categoria e tipo de problema',
+          headers: [
+            'Categoria de problema',
+            'Tipo de problema',
+            'Total de atendimentos',
+          ],
+          rows: countIssuesGrupedByProblemCategoryAndProblemType.map(
+            (issue) => [
+              issue.problemCategoryName,
+              issue.problemTypeName,
+              issue.count,
+            ],
+          ),
+        };
 
-      doc.table(table_problems, option);
-      doc.moveDown(1);
+        doc.table(table_problems, option);
+        doc.moveDown(1);
+      } else {
+        doc.font('Helvetica-Bold').fontSize(12);
+        doc.text(`Total de atendimentos por categoria e tipo de problema`);
+        doc.font('Helvetica').fontSize(12);
+        doc.text(`Não houve atendimentos para o período selecionado.`);
+      }
 
-      const table_issue_type = {
-        title: 'Tipo de atendimento',
-        headers: ['Tipo de atendimento', 'Total'],
-        rows: [
-          ['INTERNO', countIssuesWithoutSchedule.toString()],
-          ['EXTERNO', countIssuesWithSchedule.toString()],
-        ],
-      };
+      if (countIssuesWithSchedule > 0 || countIssuesWithoutSchedule > 0) {
+        const table_issue_type = {
+          title: 'Tipo de atendimento',
+          headers: ['Tipo de atendimento', 'Total'],
+          rows: [
+            ['INTERNO', countIssuesWithoutSchedule.toString()],
+            ['EXTERNO', countIssuesWithSchedule.toString()],
+          ],
+        };
 
-      doc.table(table_issue_type, {
-        ...option,
-        width: 300,
-        columnsSize: [150, 150],
-      });
-      doc.moveDown();
+        doc.table(table_issue_type, {
+          ...option,
+          width: 300,
+          columnsSize: [150, 150],
+        });
+        doc.moveDown();
+      } else {
+        doc.font('Helvetica-Bold').fontSize(12);
+        doc.text(`Tipo de atendimento`);
+        doc.font('Helvetica').fontSize(12);
+        doc.text(`Não houve atendimentos para o período selecionado.`);
+      }
 
-      const table_email = {
-        title: 'Total de atendimentos por e-mail',
-        headers: ['E-mail', 'Total de atendimentos'],
-        rows: countGroupByEmailIssue.map((issue) => [issue.email, issue.count]),
-      };
+      if (countGroupByEmailIssue.length > 0) {
+        const table_email = {
+          title: 'Total de atendimentos por e-mail',
+          headers: ['E-mail', 'Total de atendimentos'],
+          rows: countGroupByEmailIssue.map((issue) => [
+            issue.email,
+            issue.count,
+          ]),
+        };
 
-      doc.table(table_email, {
-        ...option,
-        width: 300,
-        columnsSize: [150, 150],
-      });
-      doc.moveDown();
+        doc.table(table_email, {
+          ...option,
+          width: 300,
+          columnsSize: [150, 150],
+        });
+        doc.moveDown();
+      } else {
+        doc.font('Helvetica-Bold').fontSize(12);
+        doc.text(`Total de atendimentos por e-mail`);
+        doc.font('Helvetica').fontSize(12);
+        doc.text(
+          `Não houve atendimentos por e-mail para o período selecionado.`,
+        );
+      }
 
       // Agendamentos
 
@@ -461,18 +491,25 @@ export class ReportService {
       doc.text(`Total de agendamentos: ${countSchedules + countSchedulesOpen}`);
       doc.moveDown();
 
-      const table_schedules = {
-        title: 'Total de agendamentos por categoria e tipo de problema',
-        headers: ['Categoria', 'Tipo de problema', 'Total de agendamentos'],
-        rows: sumCountSchedulesGroupedByProblems.map((schedule) => [
-          schedule.problemCategoryName,
-          schedule.problemTypeName,
-          schedule.count,
-        ]),
-      };
+      if (sumCountSchedulesGroupedByProblems.length > 0) {
+        const table_schedules = {
+          title: 'Total de agendamentos por categoria e tipo de problema',
+          headers: ['Categoria', 'Tipo de problema', 'Total de agendamentos'],
+          rows: sumCountSchedulesGroupedByProblems.map((schedule) => [
+            schedule.problemCategoryName,
+            schedule.problemTypeName,
+            schedule.count,
+          ]),
+        };
 
-      doc.table(table_schedules, option);
-      doc.moveDown();
+        doc.table(table_schedules, option);
+        doc.moveDown();
+      } else {
+        doc.font('Helvetica-Bold').fontSize(12);
+        doc.text(`Total de agendamentos por categoria e tipo de problema`);
+        doc.font('Helvetica').fontSize(12);
+        doc.text(`Não houve agendamentos para o período selecionado.`);
+      }
 
       doc.font('Helvetica-Bold').fontSize(12);
       doc.text('Gráfico de agendamentos por status:');
