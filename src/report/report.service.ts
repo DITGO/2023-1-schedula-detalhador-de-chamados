@@ -40,7 +40,7 @@ export class ReportService {
         .select('problem_category.name', 'problemCategoryName')
         .addSelect('problem_types.name', 'problemTypeName')
         .addSelect('COUNT(*)', 'count')
-        .where('issue.date BETWEEN :startDate AND :endDate', {
+        .where('issue.date >= :startDate AND issue.date <= :endDate', {
           startDate,
           endDate,
         })
@@ -54,7 +54,7 @@ export class ReportService {
     const countIssuesWithSchedule = await this.issueRepository
       .createQueryBuilder('issue')
       .leftJoin('issue.schedule', 'schedule')
-      .where('issue.date BETWEEN :startDate AND :endDate', {
+      .where('issue.date >= :startDate AND issue.date <= :endDate', {
         startDate,
         endDate,
       })
@@ -64,7 +64,7 @@ export class ReportService {
     const countIssuesWithoutSchedule = await this.issueRepository
       .createQueryBuilder('issue')
       .leftJoin('issue.schedule', 'schedule')
-      .where('issue.date BETWEEN :startDate AND :endDate', {
+      .where('issue.date >= :startDate AND issue.date <= :endDate', {
         startDate,
         endDate,
       })
@@ -75,7 +75,7 @@ export class ReportService {
       .createQueryBuilder('issue')
       .select('issue.email', 'email')
       .addSelect('COUNT(*)', 'count')
-      .where('issue.date BETWEEN :startDate AND :endDate', {
+      .where('issue.date >= :startDate AND issue.date <= :endDate', {
         startDate,
         endDate,
       })
@@ -86,7 +86,7 @@ export class ReportService {
     const countSchedules = await this.issueRepository
       .createQueryBuilder('issue')
       .leftJoin('issue.schedule', 'schedule')
-      .where('issue.date BETWEEN :startDate AND :endDate', {
+      .where('issue.date >= :startDate AND issue.date <= :endDate', {
         startDate,
         endDate,
       })
@@ -110,7 +110,7 @@ export class ReportService {
         .select('problem_category.name', 'problemCategoryName')
         .addSelect('problem_types.name', 'problemTypeName')
         .addSelect('COUNT(*)', 'count')
-        .where('issue.date BETWEEN :startDate AND :endDate', {
+        .where('issue.date >= :startDate AND issue.date <= :endDate', {
           startDate,
           endDate,
         })
@@ -131,7 +131,7 @@ export class ReportService {
         .select('problem_category.name', 'problemCategoryName')
         .addSelect('problem_types.name', 'problemTypeName')
         .addSelect('COUNT(*)', 'count')
-        .where('issue_open.date BETWEEN :startDate AND :endDate', {
+        .where('issue.date >= :startDate AND issue.date <= :endDate', {
           startDate,
           endDate,
         })
@@ -159,7 +159,7 @@ export class ReportService {
         return {
           problemCategoryName: item.problemCategoryName,
           problemTypeName: item.problemTypeName,
-          count: item.count + countSchedulesOpen.count,
+          count: parseInt(item.count) + parseInt(countSchedulesOpen.count),
         };
       });
 
@@ -168,7 +168,7 @@ export class ReportService {
       .leftJoin('issue.schedule', 'schedule')
       .select('schedule.status', 'status')
       .addSelect('COUNT(*)', 'count')
-      .where('issue.date BETWEEN :startDate AND :endDate', {
+      .where('issue.date >= :startDate AND issue.date <= :endDate', {
         startDate,
         endDate,
       })
@@ -200,7 +200,7 @@ export class ReportService {
         }
         return {
           status: item.status,
-          count: item.count + countSchedulesOpen.count,
+          count: parseInt(item.count) + parseInt(countSchedulesOpen.count),
         };
       },
     );
