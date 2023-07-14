@@ -20,9 +20,11 @@ services:
       - DATABASE_PASS=postgres
       - DATABASE_DB=schedula_core
       - DATABASE_PORT=5432
+    depends_on:
+      - pgadmin
 
   postgres:
-    image: postgres:alpine
+    image: postgres:12-alpine
     container_name: schedula_core_db
     ports:
       - '5105:5432'
@@ -32,6 +34,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=schedula_core
+    healthcheck:
+      # Run command inside the container to check if postgres is ready AND alter DATABASE_DB
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4
@@ -41,4 +49,5 @@ services:
     ports:
       - '16545:80'
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
